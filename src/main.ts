@@ -10,7 +10,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 4000;
+  const port = configService.get<number>('PORT') || 10000;
   const apiPrefix = configService.get<string>('API_PREFIX') || 'api';
   const appName = configService.get<string>('APP_NAME') || 'HairyPaws';
   const appVersion = configService.get<string>('APP_VERSION') || '1.0';
