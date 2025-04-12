@@ -8,21 +8,8 @@ import { NotificationType } from '../../core/domain/notification/value-objects/n
 import { BusinessRuleValidationException } from '../../core/exceptions/domain.exception';
 import { DonationItemRepository } from 'src/infrastructure/database/mysql/repositories/donation-item.repository';
 import { DonationRepository } from 'src/infrastructure/database/mysql/repositories/donation.repository';
-
-interface CreateDonationDto {
-  donorId: string;
-  ongId: string;
-  type: DonationType;
-  amount?: number;
-  transactionId?: string;
-  notes?: string;
-  items?: Array<{
-    name: string;
-    quantity: number;
-    description?: string;
-  }>;
-  receipt?: Express.Multer.File;
-}
+import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
+import { CreateDonationDto } from 'src/presentation/dtos/requests/create-donation.dto';
 
 @Injectable()
 export class DonationService {
@@ -31,6 +18,7 @@ export class DonationService {
     private readonly donationItemRepository: DonationItemRepository,
     private readonly s3Service: S3Service,
     private readonly notificationService: NotificationService,
+    private readonly ongRepository: OngRepository,
   ) {}
 
   /**
@@ -81,7 +69,7 @@ export class DonationService {
     const donation = await this.donationRepository.create(donationData);
     
     // Crear items de donación si aplica
-    if (createDonationDto.items && createDonationDto.items.length > 0) {
+    if (createDonationDto.items && Array.isArray(createDonationDto.items)) {
       const itemsData = createDonationDto.items.map(item => ({
         donationId: donation.id,
         name: item.name,
@@ -95,16 +83,24 @@ export class DonationService {
     // Obtener donación completa con items
     const completeDonation = await this.getDonationById(donation.id);
     
-    // Enviar notificación a la ONG
-    await this.notificationService.create({
-      userId: createDonationDto.ongId, // Aquí asumimos que el userId de la notificación es el id de la ONG
-      type: NotificationType.DONATION_RECEIVED,
-      title: 'Nueva donación recibida',
-      message: `Has recibido una nueva donación ${createDonationDto.type === DonationType.MONEY ? 'de dinero' : 
-        createDonationDto.type === DonationType.ITEMS ? 'de artículos' : 'de dinero y artículos'}`,
-      referenceId: donation.id,
-      referenceType: 'donation',
-    });
+    try {
+      // Obtener la ONG para encontrar el userId correcto
+      const ong = await this.ongRepository.findById(createDonationDto.ongId);
+      
+      // Enviar notificación al usuario asociado a la ONG
+      await this.notificationService.create({
+        userId: ong.userId, // Usar el userId de la ONG, no el ongId
+        type: NotificationType.DONATION_RECEIVED,
+        title: 'Nueva donación recibida',
+        message: `Has recibido una nueva donación ${createDonationDto.type === DonationType.MONEY ? 'de dinero' : 
+          createDonationDto.type === DonationType.ITEMS ? 'de artículos' : 'de dinero y artículos'}`,
+        referenceId: donation.id,
+        referenceType: 'donation',
+      });
+    } catch (error) {
+      // Log del error pero no interrumpir el flujo si falla la notificación
+      console.error('Error al enviar notificación a la ONG:', error.message);
+    }
     
     return completeDonation;
   }
@@ -157,15 +153,20 @@ export class DonationService {
     
     const updatedDonation = await this.donationRepository.update(donationId, updateData);
     
-    // Enviar notificación al donante
-    await this.notificationService.create({
-      userId: donation.donorId,
-      type: NotificationType.DONATION_CONFIRMED,
-      title: 'Donación confirmada',
-      message: 'Tu donación ha sido confirmada. ¡Gracias por tu apoyo!',
-      referenceId: donationId,
-      referenceType: 'donation',
-    });
+    try {
+      // Enviar notificación al donante
+      await this.notificationService.create({
+        userId: donation.donorId,
+        type: NotificationType.DONATION_CONFIRMED,
+        title: 'Donación confirmada',
+        message: 'Tu donación ha sido confirmada. ¡Gracias por tu apoyo!',
+        referenceId: donationId,
+        referenceType: 'donation',
+      });
+    } catch (error) {
+      // Log del error pero no interrumpir el flujo si falla la notificación
+      console.error('Error al enviar notificación al donante:', error.message);
+    }
     
     return updatedDonation;
   }

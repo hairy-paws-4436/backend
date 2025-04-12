@@ -13,7 +13,7 @@ import { EventModule } from './presentation/modules/event.module';
 import { NotificationModule } from './presentation/modules/notification.module';
 import { OngModule } from './presentation/modules/ong.module';
 import { UserModule } from './presentation/modules/user.module';
-import { AuthModule } from './infrastructure/services/auth/auth.module';
+import { AuthModule } from './presentation/modules/auth.module';
 
 @Module({
   imports: [

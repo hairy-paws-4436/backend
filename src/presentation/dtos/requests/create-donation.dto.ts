@@ -10,13 +10,11 @@ import {
   IsString,
   IsUUID,
   MaxLength,
-  MinLength,
   ValidateIf,
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { DonationType } from 'src/core/domain/donation/value-objects/donation-type.enum';
-
 
 class DonationItemDto {
   @ApiProperty({
@@ -55,6 +53,13 @@ export class CreateDonationDto {
   @IsUUID('4', { message: 'El ID de la ONG no es válido' })
   @IsNotEmpty({ message: 'El ID de la ONG es requerido' })
   ongId: string;
+  
+  // Añadir esta propiedad
+  @ApiProperty({
+    description: 'ID del donante (se asigna automáticamente)',
+  })
+  @IsOptional() // Es opcional en el DTO porque se asigna en el controlador
+  donorId?: string;
 
   @ApiProperty({
     description: 'Tipo de donación',
@@ -103,5 +108,14 @@ export class CreateDonationDto {
   @Type(() => DonationItemDto)
   items?: DonationItemDto[];
 
-  // receipt es manejado por el FileInterceptor
+  // Añadir esta propiedad
+  // En CreateDonationDto
+@ApiProperty({
+  description: 'Archivo de recibo (opcional)',
+  type: 'string',
+  format: 'binary',
+  required: false
+})
+@IsOptional()
+receipt?: any; // o Express.Multer.File si prefieres ser más específico
 }

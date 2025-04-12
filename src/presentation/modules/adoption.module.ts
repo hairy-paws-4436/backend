@@ -11,6 +11,7 @@ import { GetAdoptionsUseCase } from 'src/application/use-cases/donation/get-adop
 import { AdoptionRepository } from 'src/infrastructure/database/mysql/repositories/adoption.repository';
 import { AnimalModule } from './animal.module';
 import { NotificationModule } from './notification.module';
+import { OngModule } from './ong.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { NotificationModule } from './notification.module';
     TypeOrmModule.forFeature([AdoptionEntity]),
     forwardRef(() => AnimalModule),
     NotificationModule,
+    OngModule
   ],
   controllers: [AdoptionController],
   providers: [
