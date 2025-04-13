@@ -22,7 +22,7 @@ import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.modu
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION', '86400s'),
+          expiresIn: configService.get<string>('JWT_EXPIRATION'),
         },
       }),
     }),
