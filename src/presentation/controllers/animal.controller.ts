@@ -127,6 +127,7 @@ export class AnimalController {
     }),
   )
   @ApiConsumes('multipart/form-data')
+  
   @ApiOperation({ summary: 'Crear una nueva mascota' })
   @ApiResponse({
     status: HttpStatus.CREATED,

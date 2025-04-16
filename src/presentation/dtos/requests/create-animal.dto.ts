@@ -109,4 +109,16 @@ export class CreateAnimalDto {
   @IsBoolean({ message: 'El campo esterilizado debe ser un valor booleano' })
   @Type(() => Boolean)
   sterilized: boolean;
+
+  @ApiProperty({
+    description: 'Imágenes de la mascota (máximo 5)',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary'
+    },
+    required: false
+  })
+  @IsOptional()
+  images?: any[];
 }

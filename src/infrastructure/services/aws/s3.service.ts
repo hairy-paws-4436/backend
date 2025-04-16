@@ -42,25 +42,25 @@ export class S3Service {
         throw new Error('No se pudo determinar la extensión del archivo.');
       }
       const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
-
-      // Configuración para la subida
+  
+      // Configuración para la subida - QUITAR ACL
       const params = {
         Bucket: this.bucket,
         Key: fileName,
         Body: file,
-        ACL: 'public-read' as const,
+        // Eliminar la línea ACL: 'public-read'
         ContentDisposition: 'inline',
         ContentType: this.getContentType(fileExtension),
       };
-
+  
       // Subir a S3 usando comando de v3
       const command = new PutObjectCommand(params);
       await this.s3Client.send(command);
       
-      // Construir la URL manualmente ya que v3 no devuelve la ubicación automáticamente
+      // Construir la URL manualmente
       const fileUrl = `https://${this.bucket}.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${fileName}`;
       this.logger.log(`Archivo subido correctamente: ${fileUrl}`);
-
+  
       return fileUrl;
     } catch (error) {
       this.logger.error(`Error al subir archivo a S3: ${error.message}`);
