@@ -4,6 +4,7 @@ import { AdoptionRepository } from '../../../infrastructure/database/mysql/repos
 import { S3Service } from '../../../infrastructure/services/aws/s3.service';
 import { BusinessRuleValidationException, EntityNotFoundException } from '../../../core/exceptions/domain.exception';
 import { AdoptionStatus } from '../../../core/domain/adoption/value-objects/adoption-status.enum';
+import { In } from 'typeorm';
 
 @Injectable()
 export class DeleteAnimalUseCase {
@@ -21,9 +22,8 @@ export class DeleteAnimalUseCase {
       // Verificar si tiene adopciones en curso
       const activeAdoptions = await this.adoptionRepository.findAll({
         animalId,
-        status: [AdoptionStatus.PENDING, AdoptionStatus.APPROVED],
+        status: In([AdoptionStatus.PENDING, AdoptionStatus.APPROVED]),
       });
-      
       if (activeAdoptions.length > 0) {
         throw new BusinessRuleValidationException(
           'No se puede eliminar la mascota porque tiene solicitudes de adopción activas',
@@ -44,7 +44,7 @@ export class DeleteAnimalUseCase {
       
       // Eliminar la mascota
       await this.animalRepository.delete(animalId);
-    } catch (error) {
+    } catch (error) {  
       if (
         error instanceof BusinessRuleValidationException ||
         error instanceof EntityNotFoundException
@@ -55,3 +55,4 @@ export class DeleteAnimalUseCase {
     }
   }
 }
+
