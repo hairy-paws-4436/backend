@@ -37,7 +37,7 @@ export class CreateEventDto {
     description: 'Fecha y hora del evento',
     example: '2023-12-15T14:00:00Z',
   })
-  @IsDateString({}, { message: 'La fecha del evento debe ser una fecha válida' })
+
   @IsNotEmpty({ message: 'La fecha del evento es requerida' })
   eventDate: Date;
 
@@ -45,7 +45,6 @@ export class CreateEventDto {
     description: 'Fecha y hora de finalización del evento',
     example: '2023-12-15T18:00:00Z',
   })
-  @IsDateString({}, { message: 'La fecha de finalización debe ser una fecha válida' })
   @IsOptional()
   endDate?: Date;
 

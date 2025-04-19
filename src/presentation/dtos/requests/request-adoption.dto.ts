@@ -35,7 +35,6 @@ export class RequestAdoptionDto {
     example: '2023-05-20T10:00:00Z',
   })
   @ValidateIf(o => o.type === AdoptionType.VISIT)
-  @IsDateString({}, { message: 'La fecha de visita debe ser una fecha válida' })
   @IsNotEmpty({ message: 'La fecha de visita es requerida para solicitudes de tipo visita' })
   visitDate?: Date;
 
