@@ -77,7 +77,7 @@ export class AnimalController {
 
   @Get('owner')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER)
+  @Roles(UserRole.OWNER, UserRole.ONG)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obtener mascotas del usuario autenticado (dueño)' })
   @ApiResponse({
@@ -106,7 +106,7 @@ export class AnimalController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER)
+  @Roles(UserRole.OWNER, UserRole.ONG)
   @ApiBearerAuth()
   @UseInterceptors(
     FilesInterceptor('images', 5, {
