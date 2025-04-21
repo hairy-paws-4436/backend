@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { 
   IsBoolean,
-  IsDateString,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -13,6 +12,7 @@ import {
 import { Type } from 'class-transformer';
 
 export class CreateEventDto {
+
   @ApiProperty({
     description: 'Título del evento',
     example: 'Adopción Masiva en el Parque Kennedy',
@@ -83,6 +83,15 @@ export class CreateEventDto {
   @IsOptional()
   @MaxLength(500, { message: 'Los requisitos no pueden exceder los 500 caracteres' })
   requirements?: string;
+
+  @ApiProperty({
+    description: 'Archivo de recibo (opcional)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  @IsOptional()
+  image: Express.Multer.File;
 
   // image es manejado por el FileInterceptor
 }

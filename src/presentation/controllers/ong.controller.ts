@@ -125,6 +125,7 @@ import { UpdateOngDto } from '../dtos/requests/update-ong.dto';
       },
     }))
     @ApiConsumes('multipart/form-data')
+    
     @ApiOperation({ summary: 'Actualizar información de una ONG' })
     @ApiResponse({
       status: HttpStatus.OK,

@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { 
   IsOptional, 
   IsString, 
@@ -47,6 +47,15 @@ export class UpdateProfileDto {
   @IsOptional()
   @MaxLength(255, { message: 'La dirección no puede exceder los 255 caracteres' })
   address?: string;
+
+@ApiProperty({
+  description: 'Archivo de imagen (opcional)',
+  type: 'string',
+  format: 'binary',
+  required: false
+})
+  @IsOptional()
+  profileImage?: Express.Multer.File;
 
   // profileImage es manejado por el FileInterceptor
 }

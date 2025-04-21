@@ -46,12 +46,13 @@ export class UserService {
   ): Promise<UserEntity> {
     // Verificar si el número de teléfono ya está en uso
     if (updateData.phoneNumber) {
-      const phoneExists = await this.userRepository.exists({
+      // Primera opción: búsqueda más específica
+      const existingUser = await this.userRepository.findOne({
         phoneNumber: updateData.phoneNumber,
-        id: { $ne: userId }, // Excluir el usuario actual
       });
       
-      if (phoneExists) {
+      // Si encontramos un usuario con ese número y no es el mismo usuario
+      if (existingUser && existingUser.getId() !== userId) {
         throw new DuplicateEntityException(
           'usuario',
           'número de teléfono',

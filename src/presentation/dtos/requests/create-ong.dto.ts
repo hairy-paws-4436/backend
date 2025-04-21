@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 
 export class CreateOngDto {
+  
   @ApiProperty({
     description: 'Nombre de la ONG',
     example: 'Patitas Felices',
@@ -124,6 +125,16 @@ export class CreateOngDto {
     message: 'El número de cuenta interbancaria debe tener 20 dígitos (formato peruano)',
   })
   interbankAccount?: string;
+
+
+  @ApiProperty({
+    description: 'Archivo de recibo (opcional)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  @IsOptional()
+  logo?: Express.Multer.File;
 
   // logo es manejado por el FileInterceptor
 }

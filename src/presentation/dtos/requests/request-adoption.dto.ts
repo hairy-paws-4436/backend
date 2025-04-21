@@ -5,7 +5,6 @@ import {
   IsOptional, 
   IsString, 
   MaxLength, 
-  IsDateString,
   IsUUID,
   ValidateIf
 } from 'class-validator';

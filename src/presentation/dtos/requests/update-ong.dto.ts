@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { 
   IsEmail, 
   IsOptional, 
@@ -112,6 +112,16 @@ export class UpdateOngDto {
     message: 'El número de cuenta interbancaria debe tener 20 dígitos (formato peruano)',
   })
   interbankAccount?: string;
+
+  @ApiProperty({
+    description: 'Logo (opcional)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  @IsOptional()
+  logo?: Express.Multer.File;
+  
 
   // logo es manejado por el FileInterceptor
 }

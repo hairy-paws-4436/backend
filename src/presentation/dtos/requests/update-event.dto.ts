@@ -1,7 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { 
   IsBoolean,
-  IsDateString,
   IsInt,
   IsOptional,
   IsString,
@@ -36,7 +35,6 @@ export class UpdateEventDto {
     description: 'Fecha y hora del evento',
     example: '2023-12-15T14:00:00Z',
   })
-  @IsDateString({}, { message: 'La fecha del evento debe ser una fecha válida' })
   @IsOptional()
   eventDate?: Date;
 
@@ -44,7 +42,6 @@ export class UpdateEventDto {
     description: 'Fecha y hora de finalización del evento',
     example: '2023-12-15T18:00:00Z',
   })
-  @IsDateString({}, { message: 'La fecha de finalización debe ser una fecha válida' })
   @IsOptional()
   endDate?: Date;
 
@@ -93,6 +90,16 @@ export class UpdateEventDto {
   @IsOptional()
   @Type(() => Boolean)
   active?: boolean;
+
+
+  @ApiProperty({
+    description: 'Imagen (opcional)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
+  @IsOptional()
+  image?: Express.Multer.File;
 
   // image es manejado por el FileInterceptor
 }

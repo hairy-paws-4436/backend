@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { 
   IsBoolean, 
   IsEnum, 
@@ -117,6 +117,16 @@ export class UpdateAnimalDto {
   @IsOptional()
   @Type(() => Boolean)
   availableForAdoption?: boolean;
-
-  // images es manejado por el FileInterceptor
+  
+  @ApiProperty({
+      description: 'Imágenes de la mascota (máximo 5)',
+      type: 'array',
+      items: {
+        type: 'string',
+        format: 'binary'
+      },
+      required: false
+    })
+  @IsOptional()
+  images?: any[];
 }

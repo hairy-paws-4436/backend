@@ -117,5 +117,5 @@ export class CreateDonationDto {
   required: false
 })
 @IsOptional()
-receipt?: any; // o Express.Multer.File si prefieres ser más específico
+receipt?: Express.Multer.File; // o Express.Multer.File si prefieres ser más específico
 }

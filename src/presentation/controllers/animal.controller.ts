@@ -150,7 +150,7 @@ export class AnimalController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER)
+  @Roles(UserRole.OWNER, UserRole.ONG)
   @ApiBearerAuth()
   @UseInterceptors(
     FilesInterceptor('images', 5, {
@@ -206,7 +206,7 @@ export class AnimalController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.ONG)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar una mascota' })
   @ApiResponse({
