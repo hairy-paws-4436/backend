@@ -28,7 +28,7 @@ export class DonationRepository implements IDonationRepository {
     });
 
     if (!donation) {
-      throw new EntityNotFoundException('Donación', id);
+      throw new EntityNotFoundException('Donation', id);
     }
 
     return donation;
@@ -41,7 +41,7 @@ export class DonationRepository implements IDonationRepository {
     });
 
     if (!donation) {
-      throw new EntityNotFoundException('Donación');
+      throw new EntityNotFoundException('Donation');
     }
 
     return donation;
@@ -71,21 +71,19 @@ export class DonationRepository implements IDonationRepository {
   }
 
   async update(id: string, entity: Partial<DonationEntity>): Promise<DonationEntity> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.donationRepository.update(id, entity);
     
     return this.findById(id);
   }
 
   async updateConfirmationStatus(id: string, confirmed: boolean): Promise<void> {
-    // Obtener la entidad actual
     const donation = await this.donationRepository.findOne({ where: { id } });
     
     if (!donation) {
-      throw new EntityNotFoundException('Donación', id);
+      throw new EntityNotFoundException('Donation', id);
     }
     
-    // Actualizar propiedades
     if (confirmed) {
       donation.status = DonationStatus.CONFIRMED;
       donation.confirmationDate = new Date();
@@ -94,12 +92,11 @@ export class DonationRepository implements IDonationRepository {
       donation.confirmationDate = null;
     }
     
-    // Guardar la entidad
     await this.donationRepository.save(donation);
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.donationRepository.delete(id);
   }
 

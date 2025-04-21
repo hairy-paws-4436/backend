@@ -10,39 +10,38 @@ import {
 } from 'class-validator';
 import { AdoptionType } from 'src/core/domain/adoption/value-objects/adoption-type.enum';
 
-
 export class RequestAdoptionDto {
   @ApiProperty({
-    description: 'ID de la mascota a adoptar',
+    description: 'ID of the pet to adopt',
     example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
   })
-  @IsUUID('4', { message: 'El ID de la mascota no es válido' })
-  @IsNotEmpty({ message: 'El ID de la mascota es requerido' })
+  @IsUUID('4', { message: 'Pet ID is not valid' })
+  @IsNotEmpty({ message: 'Pet ID is required' })
   animalId: string;
 
   @ApiProperty({
-    description: 'Tipo de solicitud',
+    description: 'Type of request',
     enum: AdoptionType,
     example: AdoptionType.ADOPTION,
   })
-  @IsEnum(AdoptionType, { message: 'Tipo de solicitud no válido' })
-  @IsNotEmpty({ message: 'El tipo de solicitud es requerido' })
+  @IsEnum(AdoptionType, { message: 'Invalid request type' })
+  @IsNotEmpty({ message: 'Request type is required' })
   type: AdoptionType;
 
   @ApiProperty({
-    description: 'Fecha de visita (requerida solo para solicitudes de tipo visita)',
+    description: 'Visit date (required only for visit requests)',
     example: '2023-05-20T10:00:00Z',
   })
   @ValidateIf(o => o.type === AdoptionType.VISIT)
-  @IsNotEmpty({ message: 'La fecha de visita es requerida para solicitudes de tipo visita' })
+  @IsNotEmpty({ message: 'Visit date is required for visit requests' })
   visitDate?: Date;
 
   @ApiPropertyOptional({
-    description: 'Notas o comentarios adicionales',
-    example: 'Me gustaría adoptar esta mascota porque tengo experiencia con esta raza.',
+    description: 'Additional notes or comments',
+    example: 'I would like to adopt this pet because I have experience with this breed.',
   })
-  @IsString({ message: 'Las notas deben ser una cadena de texto' })
+  @IsString({ message: 'Notes must be a string' })
   @IsOptional()
-  @MaxLength(500, { message: 'Las notas no pueden exceder los 500 caracteres' })
+  @MaxLength(500, { message: 'Notes cannot exceed 500 characters' })
   notes?: string;
 }

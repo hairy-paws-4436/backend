@@ -20,7 +20,7 @@ export class GetAdoptionsUseCase {
     try {
       return await this.adoptionRepository.findAll(filters);
     } catch (error) {
-      throw new Error(`Error al obtener solicitudes de adopción: ${error.message}`);
+      throw new Error(`Error getting adoption applications: ${error.message}`);
     }
   }
 }

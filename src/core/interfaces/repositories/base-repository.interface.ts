@@ -8,7 +8,6 @@ export interface IBaseRepository<T> {
     exists(filters: any): Promise<boolean>;
   }
   
-  // Interfaces específicas para cada entidad
   export interface IUserRepository extends IBaseRepository<any> {
     findByEmail(email: string): Promise<any>;
     findByPhoneNumber(phoneNumber: string): Promise<any>;

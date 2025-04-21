@@ -14,78 +14,77 @@ import { Type } from 'class-transformer';
 export class CreateEventDto {
 
   @ApiProperty({
-    description: 'Título del evento',
-    example: 'Adopción Masiva en el Parque Kennedy',
+    description: 'Event title',
+    example: 'Mass Adoption at Kennedy Park',
   })
-  @IsString({ message: 'El título debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El título es requerido' })
-  @MinLength(5, { message: 'El título debe tener al menos 5 caracteres' })
-  @MaxLength(100, { message: 'El título no puede exceder los 100 caracteres' })
+  @IsString({ message: 'The title must be a string' })
+  @IsNotEmpty({ message: 'Title is required' })
+  @MinLength(5, { message: 'Title must be at least 5 characters long' })
+  @MaxLength(100, { message: 'Title cannot exceed 100 characters' })
   title: string;
 
   @ApiProperty({
-    description: 'Descripción del evento',
-    example: 'Evento de adopción donde podrás conocer a nuestros rescatados y darles un hogar.',
+    description: 'Event description',
+    example: 'Adoption event where you can meet our rescues and give them a home.',
   })
-  @IsString({ message: 'La descripción debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La descripción es requerida' })
-  @MinLength(20, { message: 'La descripción debe tener al menos 20 caracteres' })
-  @MaxLength(1000, { message: 'La descripción no puede exceder los 1000 caracteres' })
+  @IsString({ message: 'Description must be a string' })
+  @IsNotEmpty({ message: 'Description is required' })
+  @MinLength(20, { message: 'Description must be at least 20 characters long' })
+  @MaxLength(1000, { message: 'Description cannot exceed 1000 characters' })
   description: string;
 
   @ApiProperty({
-    description: 'Fecha y hora del evento',
+    description: 'Event date and time',
     example: '2023-12-15T14:00:00Z',
   })
-
-  @IsNotEmpty({ message: 'La fecha del evento es requerida' })
+  @IsNotEmpty({ message: 'Event date is required' })
   eventDate: Date;
 
   @ApiPropertyOptional({
-    description: 'Fecha y hora de finalización del evento',
+    description: 'Event end date and time',
     example: '2023-12-15T18:00:00Z',
   })
   @IsOptional()
   endDate?: Date;
 
   @ApiProperty({
-    description: 'Ubicación del evento',
-    example: 'Parque Kennedy, Miraflores, Lima',
+    description: 'Event location',
+    example: 'Kennedy Park, Miraflores, Lima',
   })
-  @IsString({ message: 'La ubicación debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La ubicación es requerida' })
-  @MaxLength(255, { message: 'La ubicación no puede exceder los 255 caracteres' })
+  @IsString({ message: 'Location must be a string' })
+  @IsNotEmpty({ message: 'Location is required' })
+  @MaxLength(255, { message: 'Location cannot exceed 255 characters' })
   location: string;
 
   @ApiProperty({
-    description: '¿Es un evento de voluntariado?',
+    description: 'Is it a volunteer event?',
     example: true,
   })
-  @IsBoolean({ message: 'Debe ser un valor booleano' })
+  @IsBoolean({ message: 'It must be a boolean value' })
   @Type(() => Boolean)
   isVolunteerEvent: boolean;
 
   @ApiPropertyOptional({
-    description: 'Número máximo de participantes (para eventos de voluntariado)',
+    description: 'Maximum number of participants (for volunteer events)',
     example: 20,
   })
-  @IsInt({ message: 'El número máximo de participantes debe ser un número entero' })
-  @Min(1, { message: 'El número máximo de participantes debe ser al menos 1' })
+  @IsInt({ message: 'Maximum number of participants must be an integer' })
+  @Min(1, { message: 'Maximum number of participants must be at least 1' })
   @IsOptional()
   @Type(() => Number)
   maxParticipants?: number;
 
   @ApiPropertyOptional({
-    description: 'Requisitos para participar en el evento',
-    example: 'Traer DNI, ser mayor de edad',
+    description: 'Requirements to participate in the event',
+    example: 'Bring ID, be over 18',
   })
-  @IsString({ message: 'Los requisitos deben ser una cadena de texto' })
+  @IsString({ message: 'Requirements must be a string' })
   @IsOptional()
-  @MaxLength(500, { message: 'Los requisitos no pueden exceder los 500 caracteres' })
+  @MaxLength(500, { message: 'Requirements cannot exceed 500 characters' })
   requirements?: string;
 
   @ApiProperty({
-    description: 'Archivo de recibo (opcional)',
+    description: 'Receipt file (optional)',
     type: 'string',
     format: 'binary',
     required: false
@@ -93,5 +92,4 @@ export class CreateEventDto {
   @IsOptional()
   image: Express.Multer.File;
 
-  // image es manejado por el FileInterceptor
 }

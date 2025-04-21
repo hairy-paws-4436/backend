@@ -26,22 +26,18 @@ export class RegisterUserUseCase {
 
   async execute(registerUserDto: RegisterUserDto): Promise<UserEntity> {
     try {
-      // Verificar si el email ya está registrado
       const emailExists = await this.userRepository.exists({ email: registerUserDto.email.toLowerCase() });
       if (emailExists) {
-        throw new DuplicateEntityException('usuario', 'email', registerUserDto.email);
+        throw new DuplicateEntityException('user', 'email', registerUserDto.email);
       }
 
-      // Verificar si el número de teléfono ya está registrado
       const phoneExists = await this.userRepository.exists({ phoneNumber: registerUserDto.phoneNumber });
       if (phoneExists) {
-        throw new DuplicateEntityException('usuario', 'número de teléfono', registerUserDto.phoneNumber);
+        throw new DuplicateEntityException('user', 'phone number', registerUserDto.phoneNumber);
       }
 
-      // Hashear la contraseña
       const hashedPassword = await bcrypt.hash(registerUserDto.password, 10);
 
-      // Procesar y subir imagen de perfil si existe
       let profileImageUrl: string | undefined;
       if (registerUserDto.profileImage) {
         profileImageUrl = await this.s3Service.uploadFile(
@@ -51,42 +47,36 @@ export class RegisterUserUseCase {
         );
       }
 
-      // Crear entidad de dominio
       const userEntity = new UserEntity(
-        null, // ID será generado
+        null,
         registerUserDto.email,
         hashedPassword,
         registerUserDto.firstName,
         registerUserDto.lastName,
         registerUserDto.phoneNumber,
         registerUserDto.role,
-        undefined, // estado por defecto
-        false, // no verificado por defecto
+        undefined,
+        false,
         registerUserDto.address,
         profileImageUrl,
-        undefined, // secreto 2FA
-        false, // 2FA deshabilitado por defecto
+        undefined,
+        false,
       );
 
-      // Guardar en el repositorio
       return await this.userRepository.create(userEntity);
     } catch (error) {
       if (error instanceof DuplicateEntityException || error instanceof BusinessRuleValidationException) {
         throw error;
       }
-      
-      // Si ocurre un error y ya se subió la imagen de perfil, eliminarla
+
       if (registerUserDto.profileImage) {
-        // Intentar eliminar la imagen subida si hay un error
         try {
-          // Aquí habría que tener la URL de la imagen subida para eliminarla
-          // Esto es una mejora que se podría implementar
         } catch (s3Error) {
-          console.error('Error al eliminar imagen de perfil:', s3Error);
+          console.error('Error deleting uploaded profile image:', s3Error);
         }
       }
-      
-      throw new Error(`Error al registrar usuario: ${error.message}`);
+
+      throw new Error(`Error registering user: ${error.message}`);
     }
   }
 }

@@ -10,7 +10,6 @@ import { AnimalType } from '../../../../core/domain/animal/value-objects/animal-
 import { AnimalGender } from '../../../../core/domain/animal/value-objects/animal-gender.enum';
 import { AnimalStatus } from 'src/core/domain/animal/value-objects/animal-status';
 
-
 @Injectable()
 export class AnimalRepository implements IAnimalRepository {
   constructor(
@@ -83,16 +82,14 @@ export class AnimalRepository implements IAnimalRepository {
     const animalData = this.toOrmEntity(entity);
     const imageUrls = entity.getImages();
     
-    // Guardar la entidad principal primero
     delete animalData.images;
     const createdAnimal = await this.animalRepository.save(animalData);
     
-    // Guardar las imágenes si hay
     if (imageUrls && imageUrls.length > 0) {
       const imageEntities = imageUrls.map((url, index) => ({
         animalId: createdAnimal.id,
         imageUrl: url,
-        main: index === 0, // La primera imagen se marca como principal
+        main: index === 0,
       }));
       
       await this.animalImageRepository.save(imageEntities);
@@ -105,20 +102,15 @@ export class AnimalRepository implements IAnimalRepository {
     const animal = await this.findById(id);
     const animalData = this.toOrmEntity(entity as AnimalDomainEntity);
     
-    // Actualizar la entidad principal
     delete animalData.images;
     await this.animalRepository.update(id, animalData);
     
-    // Actualizar imágenes si se proporcionan
     if (entity instanceof AnimalDomainEntity && entity.getImages) {
       const newImageUrls = entity.getImages();
       
-      // Si hay nuevas imágenes, actualizar
       if (newImageUrls && newImageUrls.length > 0) {
-        // Eliminar imágenes antiguas
         await this.animalImageRepository.delete({ animalId: id });
         
-        // Crear las nuevas
         const imageEntities = newImageUrls.map((url, index) => ({
           animalId: id,
           imageUrl: url,
@@ -135,10 +127,8 @@ export class AnimalRepository implements IAnimalRepository {
   async delete(id: string): Promise<void> {
     const animal = await this.findById(id);
     
-    // Eliminar imágenes primero (aunque la restricción ON DELETE CASCADE lo haría automáticamente)
     await this.animalImageRepository.delete({ animalId: id });
     
-    // Eliminar animal
     await this.animalRepository.delete(id);
   }
 
@@ -150,9 +140,7 @@ export class AnimalRepository implements IAnimalRepository {
     return count > 0;
   }
 
-  // Métodos de mapeo entre entidades de dominio y ORM
   private toDomainEntity(ormEntity: AnimalOrmEntity): AnimalDomainEntity {
-    // Extraer URLs de las imágenes
     const imageUrls = ormEntity.images 
       ? ormEntity.images.map(image => image.imageUrl)
       : [];
@@ -181,7 +169,6 @@ export class AnimalRepository implements IAnimalRepository {
   private toOrmEntity(domainEntity: AnimalDomainEntity): Partial<AnimalOrmEntity> & {images?: any[]} {
     const entityData = domainEntity.toObject();
     
-    // Preparar las imágenes si existen
     const images = entityData.images 
       ? entityData.images.map((url, index) => ({
           imageUrl: url,

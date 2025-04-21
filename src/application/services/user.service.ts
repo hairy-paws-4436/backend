@@ -25,46 +25,30 @@ export class UserService {
     private readonly s3Service: S3Service,
   ) {}
 
-  /**
-   * Obtiene un usuario por su ID
-   * @param userId ID del usuario
-   * @returns Entidad de usuario
-   */
   async getUserById(userId: string): Promise<UserEntity> {
     return await this.userRepository.findById(userId);
   }
 
-  /**
-   * Actualiza el perfil de un usuario
-   * @param userId ID del usuario
-   * @param updateData Datos a actualizar
-   * @returns Usuario actualizado
-   */
   async updateProfile(
     userId: string,
     updateData: UpdateProfileDto,
   ): Promise<UserEntity> {
-    // Verificar si el número de teléfono ya está en uso
     if (updateData.phoneNumber) {
-      // Primera opción: búsqueda más específica
       const existingUser = await this.userRepository.findOne({
         phoneNumber: updateData.phoneNumber,
       });
       
-      // Si encontramos un usuario con ese número y no es el mismo usuario
       if (existingUser && existingUser.getId() !== userId) {
         throw new DuplicateEntityException(
-          'usuario',
-          'número de teléfono',
+          'user',
+          'phone number',
           updateData.phoneNumber,
         );
       }
     }
     
-    // Obtener usuario actual
     const user = await this.userRepository.findById(userId);
     
-    // Procesar imagen de perfil si se proporciona
     let profileImageUrl: string | undefined;
     if (updateData.profileImage) {
       profileImageUrl = await this.s3Service.uploadFile(
@@ -73,19 +57,16 @@ export class UserService {
         updateData.profileImage.originalname,
       );
       
-      // Eliminar imagen antigua si existe
       const currentImage = user.getProfileImageUrl();
       if (currentImage) {
         try {
           await this.s3Service.deleteFile(currentImage);
         } catch (error) {
-          // Solo log, no fallar si no se puede eliminar la imagen antigua
-          console.error(`Error al eliminar imagen antigua: ${error.message}`);
+          console.error(`Error deleting old image: ${error.message}`);
         }
       }
     }
     
-    // Actualizar usuario
     user.updateProfile(
       updateData.firstName,
       updateData.lastName,
@@ -93,59 +74,40 @@ export class UserService {
       updateData.address,
     );
     
-    // Actualizar imagen de perfil si se proporciona
     if (profileImageUrl) {
       user.updateProfileImage(profileImageUrl);
     }
     
-    // Guardar cambios
     return await this.userRepository.update(userId, user);
   }
 
-  /**
-   * Cambia la contraseña de un usuario
-   * @param userId ID del usuario
-   * @param changePasswordDto Datos para cambio de contraseña
-   */
   async changePassword(
     userId: string,
     changePasswordDto: ChangePasswordDto,
   ): Promise<void> {
-    // Obtener usuario
     const user = await this.userRepository.findById(userId);
     
-    // Verificar contraseña actual
     const isPasswordValid = await bcrypt.compare(
       changePasswordDto.oldPassword,
       user.getPassword(),
     );
     
     if (!isPasswordValid) {
-      throw new Error('Contraseña actual incorrecta');
+      throw new Error('Incorrect current password');
     }
     
-    // Hashear nueva contraseña
     const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
     
-    // Actualizar contraseña
     user.updatePassword(hashedPassword);
     
-    // Guardar cambios
     await this.userRepository.update(userId, user);
   }
 
-  /**
-   * Desactiva la cuenta de un usuario
-   * @param userId ID del usuario
-   */
   async deactivateAccount(userId: string): Promise<void> {
-    // Obtener usuario
     const user = await this.userRepository.findById(userId);
     
-    // Desactivar cuenta
     user.deactivate();
     
-    // Guardar cambios
     await this.userRepository.update(userId, user);
   }
 }

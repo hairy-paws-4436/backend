@@ -59,7 +59,7 @@ export class OngRepository implements IOngRepository {
       return await this.findOne({ userId });
     } catch (error) {
       if (error instanceof EntityNotFoundException) {
-        throw new EntityNotFoundException('ONG para el usuario');
+        throw new EntityNotFoundException('ONG for the user');
       }
       throw error;
     }
@@ -73,19 +73,19 @@ export class OngRepository implements IOngRepository {
   }
 
   async update(id: string, entity: Partial<OngEntity>): Promise<OngEntity> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.ongRepository.update(id, entity);
     
     return this.findById(id);
   }
 
   async updateVerificationStatus(id: string, verified: boolean): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.ongRepository.update(id, { verified });
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.ongRepository.delete(id);
   }
 

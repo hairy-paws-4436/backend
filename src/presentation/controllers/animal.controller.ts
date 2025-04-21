@@ -39,7 +39,7 @@ import { UpdateAnimalDto } from '../dtos/requests/update-animal.dto';
 import { UpdateAnimalUseCase } from 'src/application/use-cases/animal/update-animal.use-case';
 import { AnimalType } from 'src/core/domain/animal/value-objects/animal-type.enum';
 
-@ApiTags('Mascotas')
+@ApiTags('Animals')
 @Controller('animals')
 export class AnimalController {
   constructor(
@@ -52,17 +52,16 @@ export class AnimalController {
 
   @Get()
   @ApiOperation({
-    summary: 'Obtener listado de mascotas disponibles para adopción',
+    summary: 'Get a list of available animals for adoption',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Listado de mascotas obtenido exitosamente',
+    description: 'List of animals retrieved successfully',
   })
   async getAvailableAnimals(
     @Query('type') typeStr?: string,
     @Query('breed') breed?: string,
   ) {
-    // Convertir el string al enum
     const type = typeStr ? (typeStr as AnimalType) : undefined;
 
     const filters = {
@@ -79,10 +78,10 @@ export class AnimalController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ONG)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener mascotas del usuario autenticado (dueño)' })
+  @ApiOperation({ summary: 'Get the authenticated user\'s animals (owner)' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Listado de mascotas obtenido exitosamente',
+    description: 'List of animals retrieved successfully',
   })
   async getOwnerAnimals(@User() user) {
     const animals = await this.getAnimalsUseCase.execute({ ownerId: user.id });
@@ -90,14 +89,14 @@ export class AnimalController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener detalles de una mascota' })
+  @ApiOperation({ summary: 'Get details of an animal' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Detalles de la mascota obtenidos exitosamente',
+    description: 'Animal details retrieved successfully',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Mascota no encontrada',
+    description: 'Animal not found',
   })
   async getAnimal(@Param('id', ParseUUIDPipe) id: string) {
     const animal = await this.getAnimalUseCase.execute(id);
@@ -117,7 +116,7 @@ export class AnimalController {
         if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
           return cb(
             new Error(
-              'Solo se permiten archivos de imagen (jpg, jpeg, png, gif)',
+              'Only image files (jpg, jpeg, png, gif) are allowed',
             ),
             false,
           );
@@ -127,18 +126,16 @@ export class AnimalController {
     }),
   )
   @ApiConsumes('multipart/form-data')
-  
-  @ApiOperation({ summary: 'Crear una nueva mascota' })
+  @ApiOperation({ summary: 'Create a new animal' })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Mascota creada exitosamente',
+    description: 'Animal created successfully',
   })
   async createAnimal(
     @Body() createAnimalDto: CreateAnimalDto,
     @UploadedFiles() images: Express.Multer.File[],
     @User() user,
   ) {
-    // Asignar el ID del usuario autenticado como dueño
     const animal = await this.createAnimalUseCase.execute({
       ...createAnimalDto,
       ownerId: user.id,
@@ -155,13 +152,13 @@ export class AnimalController {
   @UseInterceptors(
     FilesInterceptor('images', 5, {
       limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
+        fileSize: 5 * 1024 * 1024,
       },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
           return cb(
             new Error(
-              'Solo se permiten archivos de imagen (jpg, jpeg, png, gif)',
+              'Only image files (jpg, jpeg, png, gif) are allowed',
             ),
             false,
           );
@@ -171,18 +168,18 @@ export class AnimalController {
     }),
   )
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Actualizar información de una mascota' })
+  @ApiOperation({ summary: 'Update animal information' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Mascota actualizada exitosamente',
+    description: 'Animal updated successfully',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Mascota no encontrada',
+    description: 'Animal not found',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'No tienes permisos para actualizar esta mascota',
+    description: 'You do not have permission to update this animal',
   })
   async updateAnimal(
     @Param('id', ParseUUIDPipe) id: string,
@@ -190,10 +187,9 @@ export class AnimalController {
     @UploadedFiles() images: Express.Multer.File[],
     @User() user,
   ) {
-    // Verificar que el usuario sea el dueño de la mascota
     const animal = await this.getAnimalUseCase.execute(id);
     if (animal.getOwnerId() !== user.id) {
-      throw new ForbiddenException('No eres el dueño de esta mascota');
+      throw new ForbiddenException('You are not the owner of this animal');
     }
 
     const updatedAnimal = await this.updateAnimalUseCase.execute(id, {
@@ -208,33 +204,28 @@ export class AnimalController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.ONG)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Eliminar una mascota' })
+  @ApiOperation({ summary: 'Delete an animal' })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
-    description: 'Mascota eliminada exitosamente',
+    description: 'Animal deleted successfully',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Mascota no encontrada',
+    description: 'Animal not found',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'No tienes permisos para eliminar esta mascota',
+    description: 'You do not have permission to delete this animal',
   })
   async deleteAnimal(@Param('id', ParseUUIDPipe) id: string, @User() user) {
-    // Verificar que el usuario sea el dueño de la mascota o un administrador
     if (user.role !== UserRole.ADMIN) {
       const animal = await this.getAnimalUseCase.execute(id);
       if (animal.getOwnerId() !== user.id) {
-        throw new ForbiddenException('No eres el dueño de esta mascota');
+        throw new ForbiddenException('You are not the owner of this animal');
       }
     }
 
     await this.deleteAnimalUseCase.execute(id);
     return { statusCode: HttpStatus.NO_CONTENT };
   }
-
-
-  
-
 }

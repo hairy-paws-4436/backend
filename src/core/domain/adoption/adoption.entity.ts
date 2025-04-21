@@ -3,7 +3,6 @@ import { BusinessRuleValidationException } from '../../exceptions/domain.excepti
 import { AdoptionStatus } from './value-objects/adoption-status.enum';
 import { AdoptionType } from './value-objects/adoption-type.enum';
 
-
 export class AdoptionEntity {
   private readonly id: string;
   private animalId: string;
@@ -34,10 +33,9 @@ export class AdoptionEntity {
     createdAt?: Date,
     updatedAt?: Date,
   ) {
-    // Validaciones de dominio
     if (visitDate && type !== AdoptionType.VISIT) {
       throw new BusinessRuleValidationException(
-        'La fecha de visita solo aplica para solicitudes de tipo visita',
+        'Visit date only applies to visit-type requests',
       );
     }
 
@@ -56,7 +54,6 @@ export class AdoptionEntity {
     this.updatedAt = updatedAt || new Date();
   }
 
-  // Getters
   getId(): string {
     return this.id;
   }
@@ -109,11 +106,10 @@ export class AdoptionEntity {
     return this.updatedAt;
   }
 
-  // Métodos de negocio
   approve(): void {
     if (this.status !== AdoptionStatus.PENDING) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden aprobar solicitudes pendientes',
+        'Only pending requests can be approved',
       );
     }
 
@@ -125,7 +121,7 @@ export class AdoptionEntity {
   reject(notes?: string): void {
     if (this.status !== AdoptionStatus.PENDING) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden rechazar solicitudes pendientes',
+        'Only pending requests can be rejected',
       );
     }
 
@@ -140,7 +136,7 @@ export class AdoptionEntity {
   cancel(): void {
     if (this.status !== AdoptionStatus.PENDING && this.status !== AdoptionStatus.APPROVED) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden cancelar solicitudes pendientes o aprobadas',
+        'Only pending or approved requests can be cancelled',
       );
     }
 
@@ -151,7 +147,7 @@ export class AdoptionEntity {
   complete(): void {
     if (this.status !== AdoptionStatus.APPROVED) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden completar solicitudes aprobadas',
+        'Only approved requests can be completed',
       );
     }
 
@@ -162,7 +158,7 @@ export class AdoptionEntity {
   updateVisitDate(visitDate: Date): void {
     if (this.type !== AdoptionType.VISIT) {
       throw new BusinessRuleValidationException(
-        'Solo se puede actualizar la fecha de visita en solicitudes de tipo visita',
+        'Visit date can only be updated for visit-type requests',
       );
     }
 

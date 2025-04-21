@@ -49,7 +49,6 @@ import { NotificationType } from 'src/core/domain/notification/value-objects/not
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @ManyToOne(() => UserEntity, (user) => user.notifications)
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;

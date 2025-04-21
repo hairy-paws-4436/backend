@@ -18,30 +18,24 @@ export class CancelAdoptionUseCase {
 
   async execute(cancelAdoptionDto: CancelAdoptionDto): Promise<AdoptionEntity> {
     try {
-      // Obtener la solicitud
       const adoption = await this.adoptionRepository.findById(cancelAdoptionDto.adoptionId);
       
-      // Cancelar la solicitud (el método interno verificará si se puede cancelar)
       adoption.cancel();
       
-      // Guardar la solicitud
       const updatedAdoption = await this.adoptionRepository.update(
         cancelAdoptionDto.adoptionId,
         adoption,
       );
       
-      // Notificar a la otra parte involucrada (si el que cancela es el adoptante, notificar al dueño y viceversa)
-      // Acá asumimos que el userId que viene en el DTO es el que está cancelando
       const notificationType = NotificationType.GENERAL;
       const notificationTitle = adoption.isAdoption()
-        ? 'Solicitud de adopción cancelada'
-        : 'Solicitud de visita cancelada';
+        ? 'Adoption request canceled'
+        : 'Visit request canceled';
       
       const notificationMessage = adoption.isAdoption()
-        ? 'Una solicitud de adopción ha sido cancelada'
-        : 'Una solicitud de visita ha sido cancelada';
+        ? 'An adoption request has been canceled'
+        : 'A visit request has been canceled';
       
-      // Notificar a ambos participantes
       await this.notificationService.create({
         userId: adoption.getOwnerId(),
         type: notificationType,
@@ -68,7 +62,7 @@ export class CancelAdoptionUseCase {
       ) {
         throw error;
       }
-      throw new Error(`Error al cancelar solicitud de adopción: ${error.message}`);
+      throw new Error(`Error canceling adoption request: ${error.message}`);
     }
   }
 }

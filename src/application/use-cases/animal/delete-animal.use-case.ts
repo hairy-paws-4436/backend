@@ -16,33 +16,28 @@ export class DeleteAnimalUseCase {
 
   async execute(animalId: string): Promise<void> {
     try {
-      // Verificar si existe la mascota
       const animal = await this.animalRepository.findById(animalId);
       
-      // Verificar si tiene adopciones en curso
       const activeAdoptions = await this.adoptionRepository.findAll({
         animalId,
         status: In([AdoptionStatus.PENDING, AdoptionStatus.APPROVED]),
       });
       if (activeAdoptions.length > 0) {
         throw new BusinessRuleValidationException(
-          'No se puede eliminar la mascota porque tiene solicitudes de adopción activas',
+          'Cannot delete the animal because it has active adoption requests',
         );
       }
       
-      // Eliminar imágenes de S3
       const imageUrls = animal.getImages();
       
       const deletePromises = imageUrls.map(imageUrl => 
         this.s3Service.deleteFile(imageUrl).catch(error => {
-          console.error(`Error al eliminar imagen ${imageUrl}: ${error.message}`);
-          // No interrumpir el proceso si falla la eliminación de una imagen
+          console.error(`Error deleting image ${imageUrl}: ${error.message}`);
         })
       );
       
       await Promise.all(deletePromises);
       
-      // Eliminar la mascota
       await this.animalRepository.delete(animalId);
     } catch (error) {  
       if (
@@ -51,8 +46,7 @@ export class DeleteAnimalUseCase {
       ) {
         throw error;
       }
-      throw new Error(`Error al eliminar mascota: ${error.message}`);
+      throw new Error(`Error deleting animal: ${error.message}`);
     }
   }
 }
-

@@ -27,7 +27,7 @@ export class EventRepository implements IBaseRepository<EventEntity> {
     });
 
     if (!event) {
-      throw new EntityNotFoundException('Evento', id);
+      throw new EntityNotFoundException('Event', id);
     }
 
     return event;
@@ -40,7 +40,7 @@ export class EventRepository implements IBaseRepository<EventEntity> {
     });
 
     if (!event) {
-      throw new EntityNotFoundException('Evento');
+      throw new EntityNotFoundException('Event');
     }
 
     return event;
@@ -73,14 +73,14 @@ export class EventRepository implements IBaseRepository<EventEntity> {
   }
 
   async update(id: string, entity: Partial<EventEntity>): Promise<EventEntity> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.eventRepository.update(id, entity);
     
     return this.findById(id);
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.eventRepository.delete(id);
   }
 

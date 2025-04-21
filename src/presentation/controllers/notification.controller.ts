@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
 
-@ApiTags('Notificaciones')
+@ApiTags('Notifications')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -29,16 +29,16 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Obtener notificaciones del usuario' })
+  @ApiOperation({ summary: 'Get user notifications' })
   @ApiQuery({
     name: 'unread',
     required: false,
     type: Boolean,
-    description: 'Obtener solo notificaciones no leídas',
+    description: 'Get only unread notifications',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Notificaciones obtenidas exitosamente',
+    description: 'Notifications successfully retrieved',
   })
   async getNotifications(@User() user, @Query('unread') unread?: string) {
     const notifications = await this.notificationService.getByUserId(
@@ -51,47 +51,47 @@ export class NotificationController {
 
   @Post(':id/read')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Marcar notificación como leída' })
+  @ApiOperation({ summary: 'Mark notification as read' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Notificación marcada como leída exitosamente',
+    description: 'Notification successfully marked as read',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Notificación no encontrada',
+    description: 'Notification not found',
   })
   async markAsRead(@Param('id', ParseUUIDPipe) id: string, @User() user) {
     await this.notificationService.markAsRead(id, user.id);
-    return { message: 'Notificación marcada como leída' };
+    return { message: 'Notification marked as read' };
   }
 
   @Post('read-all')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Marcar todas las notificaciones como leídas' })
+  @ApiOperation({ summary: 'Mark all notifications as read' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Todas las notificaciones marcadas como leídas exitosamente',
+    description: 'All notifications successfully marked as read',
   })
   async markAllAsRead(@User() user) {
     await this.notificationService.markAllAsRead(user.id);
-    return { message: 'Todas las notificaciones marcadas como leídas' };
+    return { message: 'All notifications marked as read' };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar notificación' })
+  @ApiOperation({ summary: 'Delete notification' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Notificación eliminada exitosamente',
+    description: 'Notification successfully deleted',
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Notificación no encontrada',
+    description: 'Notification not found',
   })
   async deleteNotification(
     @Param('id', ParseUUIDPipe) id: string,
     @User() user,
   ) {
     await this.notificationService.delete(id, user.id);
-    return { message: 'Notificación eliminada' };
+    return { message: 'Notification deleted' };
   }
 }

@@ -3,11 +3,11 @@ import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ApproveAdoptionDto {
   @ApiPropertyOptional({
-    description: 'Notas adicionales para la aprobación',
-    example: 'Puedes venir a recoger a la mascota el sábado por la mañana.',
+    description: 'Additional notes for approval',
+    example: 'You can come to pick up the pet on Saturday morning.',
   })
-  @IsString({ message: 'Las notas deben ser una cadena de texto' })
+  @IsString({ message: 'Notes must be a string' })
   @IsOptional()
-  @MaxLength(500, { message: 'Las notas no pueden exceder los 500 caracteres' })
+  @MaxLength(500, { message: 'Notes cannot exceed 500 characters' })
   notes?: string;
 }

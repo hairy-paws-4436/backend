@@ -76,7 +76,6 @@ import { NotificationEntity } from './notification.entity';
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @OneToMany(() => AnimalEntity, (animal) => animal.owner)
     animals: AnimalEntity[];
   
@@ -92,17 +91,14 @@ import { NotificationEntity } from './notification.entity';
     @OneToMany(() => NotificationEntity, (notification) => notification.user)
     notifications: NotificationEntity[];
   
-    // Hooks
     @BeforeInsert()
     @BeforeUpdate()
     async hashPassword() {
-      // Solo hashear si la contraseña ha sido modificada
       if (this.password && this.password.substring(0, 7) !== '$2b$10$') {
         this.password = await bcrypt.hash(this.password, 10);
       }
     }
   
-    // Métodos
     async comparePassword(attempt: string): Promise<boolean> {
       return bcrypt.compare(attempt, this.password);
     }

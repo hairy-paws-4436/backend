@@ -19,35 +19,30 @@ export class RejectAdoptionUseCase {
 
   async execute(rejectAdoptionDto: RejectAdoptionDto): Promise<AdoptionEntity> {
     try {
-      // Obtener la solicitud
       const adoption = await this.adoptionRepository.findById(rejectAdoptionDto.adoptionId);
       
-      // Verificar que esté en estado pendiente
       if (!adoption.isPending()) {
         throw new BusinessRuleValidationException(
-          'Solo se pueden rechazar solicitudes pendientes',
+          'Only pending requests can be rejected',
         );
       }
       
-      // Rechazar la solicitud
       adoption.reject(rejectAdoptionDto.reason);
       
-      // Guardar la solicitud
       const updatedAdoption = await this.adoptionRepository.update(
         rejectAdoptionDto.adoptionId,
         adoption,
       );
       
-      // Enviar notificación al adoptante
       const notificationType = adoption.isAdoption()
         ? NotificationType.ADOPTION_REJECTED
         : NotificationType.VISIT_REJECTED;
         
       const notificationTitle = adoption.isAdoption()
-        ? 'Solicitud de adopción rechazada'
-        : 'Solicitud de visita rechazada';
+        ? 'Adoption request rejected'
+        : 'Visit request rejected';
         
-      const notificationMessage = `Tu solicitud ha sido rechazada. Motivo: ${rejectAdoptionDto.reason}`;
+      const notificationMessage = `Your request has been rejected. Reason: ${rejectAdoptionDto.reason}`;
       
       await this.notificationService.create({
         userId: adoption.getAdopterId(),
@@ -66,7 +61,7 @@ export class RejectAdoptionUseCase {
       ) {
         throw error;
       }
-      throw new Error(`Error al rechazar solicitud de adopción: ${error.message}`);
+      throw new Error(`Error rejecting adoption request: ${error.message}`);
     }
   }
 }

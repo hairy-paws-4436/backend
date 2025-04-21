@@ -27,7 +27,7 @@ export class DonationItemRepository implements IBaseRepository<DonationItemEntit
     });
 
     if (!donationItem) {
-      throw new EntityNotFoundException('Ítem de donación', id);
+      throw new EntityNotFoundException('Donation Item', id);
     }
 
     return donationItem;
@@ -40,7 +40,7 @@ export class DonationItemRepository implements IBaseRepository<DonationItemEntit
     });
 
     if (!donationItem) {
-      throw new EntityNotFoundException('Ítem de donación');
+      throw new EntityNotFoundException('Donation Item');
     }
 
     return donationItem;
@@ -67,14 +67,14 @@ export class DonationItemRepository implements IBaseRepository<DonationItemEntit
   }
 
   async update(id: string, entity: Partial<DonationItemEntity>): Promise<DonationItemEntity> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id); 
     await this.donationItemRepository.update(id, entity);
     
     return this.findById(id);
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id); 
     await this.donationItemRepository.delete(id);
   }
 

@@ -17,23 +17,16 @@ import { AuthModule } from './presentation/modules/auth.module';
 
 @Module({
   imports: [
-    // Configuración
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env`,
     }),
-    
-    // Base de datos
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useClass: TypeOrmConfigService,
     }),
-    
-    // Servicios de infraestructura
     AwsModule,
-    
-    // Módulos de la aplicación
     AuthModule,
     UserModule,
     AnimalModule,

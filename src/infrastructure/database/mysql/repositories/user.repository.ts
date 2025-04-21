@@ -8,7 +8,6 @@ import { EntityNotFoundException } from '../../../../core/exceptions/domain.exce
 import { UserRole } from '../../../../core/domain/user/value-objects/user-role.enum';
 import { UserStatus } from 'src/core/domain/user/value-objects/user-status';
 
-
 @Injectable()
 export class UserRepository implements IUserRepository {
   constructor(
@@ -31,7 +30,7 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new EntityNotFoundException('Usuario', id);
+      throw new EntityNotFoundException('User', id);
     }
 
     return this.toDomainEntity(user);
@@ -43,25 +42,24 @@ export class UserRepository implements IUserRepository {
     });
 
     if (!user) {
-      throw new EntityNotFoundException('Usuario');
+      throw new EntityNotFoundException('User');
     }
 
     return this.toDomainEntity(user);
   }
 
   async findOneForAuth(filters: any): Promise<any> {
-  // Devuelve la entidad ORM directamente para operaciones de autenticación
-  return await this.userRepository.findOne({
-    where: filters,
-  });
-}
+    return await this.userRepository.findOne({
+      where: filters,
+    });
+  }
 
   async findByEmail(email: string): Promise<UserDomainEntity> {
     try {
       return await this.findOne({ email: email.toLowerCase() });
     } catch (error) {
       if (error instanceof EntityNotFoundException) {
-        throw new EntityNotFoundException('Usuario con email');
+        throw new EntityNotFoundException('User with email');
       }
       throw error;
     }
@@ -72,7 +70,7 @@ export class UserRepository implements IUserRepository {
       return await this.findOne({ phoneNumber });
     } catch (error) {
       if (error instanceof EntityNotFoundException) {
-        throw new EntityNotFoundException('Usuario con número de teléfono');
+        throw new EntityNotFoundException('User with phone number');
       }
       throw error;
     }
@@ -117,7 +115,6 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  // Métodos de mapeo entre entidades de dominio y ORM
   private toDomainEntity(ormEntity: UserOrmEntity): UserDomainEntity {
     return new UserDomainEntity(
       ormEntity.id,

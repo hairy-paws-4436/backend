@@ -33,8 +33,7 @@ import {
   
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
-  
-    // Relaciones
+
     @ManyToOne(() => AnimalEntity, (animal) => animal.images, {
       onDelete: 'CASCADE',
     })

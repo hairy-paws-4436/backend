@@ -12,88 +12,87 @@ import { Type } from 'class-transformer';
 
 export class UpdateEventDto {
   @ApiPropertyOptional({
-    description: 'Título del evento',
-    example: 'Adopción Masiva en el Parque Kennedy',
+    description: 'Event title',
+    example: 'Mass Adoption at Parque Kennedy',
   })
-  @IsString({ message: 'El título debe ser una cadena de texto' })
+  @IsString({ message: 'The title must be a string' })
   @IsOptional()
-  @MinLength(5, { message: 'El título debe tener al menos 5 caracteres' })
-  @MaxLength(100, { message: 'El título no puede exceder los 100 caracteres' })
+  @MinLength(5, { message: 'The title must be at least 5 characters long' })
+  @MaxLength(100, { message: 'The title cannot exceed 100 characters' })
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Descripción del evento',
-    example: 'Evento de adopción donde podrás conocer a nuestros rescatados y darles un hogar.',
+    description: 'Event description',
+    example: 'Adoption event where you can meet our rescues and give them a home.',
   })
-  @IsString({ message: 'La descripción debe ser una cadena de texto' })
+  @IsString({ message: 'The description must be a string' })
   @IsOptional()
-  @MinLength(20, { message: 'La descripción debe tener al menos 20 caracteres' })
-  @MaxLength(1000, { message: 'La descripción no puede exceder los 1000 caracteres' })
+  @MinLength(20, { message: 'The description must be at least 20 characters long' })
+  @MaxLength(1000, { message: 'The description cannot exceed 1000 characters' })
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Fecha y hora del evento',
+    description: 'Event date and time',
     example: '2023-12-15T14:00:00Z',
   })
   @IsOptional()
   eventDate?: Date;
 
   @ApiPropertyOptional({
-    description: 'Fecha y hora de finalización del evento',
+    description: 'Event end date and time',
     example: '2023-12-15T18:00:00Z',
   })
   @IsOptional()
   endDate?: Date;
 
   @ApiPropertyOptional({
-    description: 'Ubicación del evento',
+    description: 'Event location',
     example: 'Parque Kennedy, Miraflores, Lima',
   })
-  @IsString({ message: 'La ubicación debe ser una cadena de texto' })
+  @IsString({ message: 'The location must be a string' })
   @IsOptional()
-  @MaxLength(255, { message: 'La ubicación no puede exceder los 255 caracteres' })
+  @MaxLength(255, { message: 'The location cannot exceed 255 characters' })
   location?: string;
 
   @ApiPropertyOptional({
-    description: '¿Es un evento de voluntariado?',
+    description: 'Is it a volunteer event?',
     example: true,
   })
-  @IsBoolean({ message: 'Debe ser un valor booleano' })
+  @IsBoolean({ message: 'It must be a boolean value' })
   @IsOptional()
   @Type(() => Boolean)
   isVolunteerEvent?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Número máximo de participantes (para eventos de voluntariado)',
+    description: 'Maximum number of participants (for volunteer events)',
     example: 20,
   })
-  @IsInt({ message: 'El número máximo de participantes debe ser un número entero' })
-  @Min(1, { message: 'El número máximo de participantes debe ser al menos 1' })
+  @IsInt({ message: 'The maximum number of participants must be an integer' })
+  @Min(1, { message: 'The maximum number of participants must be at least 1' })
   @IsOptional()
   @Type(() => Number)
   maxParticipants?: number;
 
   @ApiPropertyOptional({
-    description: 'Requisitos para participar en el evento',
-    example: 'Traer DNI, ser mayor de edad',
+    description: 'Requirements to participate in the event',
+    example: 'Bring ID, be of legal age',
   })
-  @IsString({ message: 'Los requisitos deben ser una cadena de texto' })
+  @IsString({ message: 'The requirements must be a string' })
   @IsOptional()
-  @MaxLength(500, { message: 'Los requisitos no pueden exceder los 500 caracteres' })
+  @MaxLength(500, { message: 'The requirements cannot exceed 500 characters' })
   requirements?: string;
 
   @ApiPropertyOptional({
-    description: 'Estado activo del evento',
+    description: 'Event active status',
     example: true,
   })
-  @IsBoolean({ message: 'Debe ser un valor booleano' })
+  @IsBoolean({ message: 'It must be a boolean value' })
   @IsOptional()
   @Type(() => Boolean)
   active?: boolean;
 
-
   @ApiProperty({
-    description: 'Imagen (opcional)',
+    description: 'Image (optional)',
     type: 'string',
     format: 'binary',
     required: false
@@ -101,5 +100,4 @@ export class UpdateEventDto {
   @IsOptional()
   image?: Express.Multer.File;
 
-  // image es manejado por el FileInterceptor
 }

@@ -46,28 +46,19 @@ export class OngService {
     private readonly s3Service: S3Service,
   ) {}
 
-  /**
-   * Crea una nueva ONG
-   * @param createOngDto Datos para crear la ONG
-   * @returns ONG creada
-   */
   async createOng(createOngDto: CreateOngDto) {
-    // Verificar si el RUC ya está registrado
     const rucExists = await this.ongRepository.exists({ ruc: createOngDto.ruc });
     if (rucExists) {
-      throw new DuplicateEntityException('ONG', 'RUC', createOngDto.ruc);
+      throw new DuplicateEntityException('NGO', 'RUC', createOngDto.ruc);
     }
     
-    // Verificar si el usuario existe y tiene el rol correcto
     const user = await this.userRepository.findById(createOngDto.userId);
     
-    // Cambiar rol del usuario a ONG si no lo es
     if (user.getRole() !== UserRole.ONG) {
       user.changeRole(UserRole.ONG);
       await this.userRepository.update(user.getId(), user);
     }
     
-    // Subir logo si se proporciona
     let logoUrl: string | undefined;
     if (createOngDto.logo) {
       logoUrl = await this.s3Service.uploadFile(
@@ -77,7 +68,6 @@ export class OngService {
       );
     }
     
-    // Crear ONG
     const ongData = {
       userId: createOngDto.userId,
       name: createOngDto.name,
@@ -88,7 +78,7 @@ export class OngService {
       email: createOngDto.email,
       website: createOngDto.website,
       logoUrl,
-      verified: false, // Por defecto no verificada
+      verified: false,
       mission: createOngDto.mission,
       vision: createOngDto.vision,
       bankAccount: createOngDto.bankAccount,
@@ -99,11 +89,6 @@ export class OngService {
     return await this.ongRepository.create(ongData);
   }
 
-  /**
-   * Obtiene todas las ONGs
-   * @param verified Filtro opcional por estado de verificación
-   * @returns Lista de ONGs
-   */
   async getAllOngs(verified?: boolean) {
     const filters = {};
     
@@ -114,45 +99,26 @@ export class OngService {
     return await this.ongRepository.findAll(filters);
   }
 
-  /**
-   * Obtiene una ONG por su ID
-   * @param ongId ID de la ONG
-   * @returns Datos de la ONG
-   */
   async getOngById(ongId: string) {
     return await this.ongRepository.findById(ongId);
   }
 
-  /**
-   * Obtiene una ONG por el ID de usuario
-   * @param userId ID del usuario
-   * @returns Datos de la ONG
-   */
   async getOngByUserId(userId: string) {
     try {
       return await this.ongRepository.findByUserId(userId);
     } catch (error) {
       if (error instanceof EntityNotFoundException) {
-        throw new EntityNotFoundException('ONG para el usuario');
+        throw new EntityNotFoundException('NGO for the user');
       }
       throw error;
     }
   }
 
-  /**
-   * Actualiza los datos de una ONG
-   * @param ongId ID de la ONG
-   * @param updateOngDto Datos a actualizar
-   * @returns ONG actualizada
-   */
   async updateOng(ongId: string, updateOngDto: UpdateOngDto) {
-    // Verificar si la ONG existe
     const ong = await this.ongRepository.findById(ongId);
     
-    // Preparar datos a actualizar
     const updateData = { ...updateOngDto };
     
-    // Procesar logo si se proporciona
     if (updateOngDto.logo) {
       const logoUrl = await this.s3Service.uploadFile(
         updateOngDto.logo.buffer,
@@ -160,12 +126,11 @@ export class OngService {
         updateOngDto.logo.originalname,
       );
       
-      // Eliminar logo anterior si existe
       if (ong.logoUrl) {
         try {
           await this.s3Service.deleteFile(ong.logoUrl);
         } catch (error) {
-          console.error(`Error al eliminar logo anterior: ${error.message}`);
+          console.error(`Error deleting previous logo: ${error.message}`);
         }
       }
       
@@ -173,15 +138,9 @@ export class OngService {
       delete updateData.logo;
     }
     
-    // Actualizar ONG
     return await this.ongRepository.update(ongId, updateData);
   }
 
-  /**
-   * Verifica si un usuario tiene una ONG
-   * @param userId ID del usuario
-   * @returns true si el usuario tiene una ONG
-   */
   async hasOng(userId: string): Promise<boolean> {
     try {
       await this.ongRepository.findByUserId(userId);

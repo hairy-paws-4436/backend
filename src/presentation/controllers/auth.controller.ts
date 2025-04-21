@@ -30,7 +30,7 @@ import { LoginDto } from '../dtos/requests/login.dto';
 import { RegisterDto } from '../dtos/requests/register.dto';
 import { TwoFactorAuthDto } from '../dtos/requests/twofa.dto';
 
-@ApiTags('Autenticación')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -42,14 +42,14 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Registrar un nuevo usuario' })
+  @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Usuario registrado exitosamente',
+    description: 'User successfully registered',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Datos inválidos o usuario ya existe',
+    description: 'Invalid data or user already exists',
   })
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.registerUserUseCase.execute({
@@ -73,36 +73,32 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiOperation({ summary: 'Login' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Login exitoso',
+    description: 'Successful login',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Credenciales inválidas',
+    description: 'Invalid credentials',
   })
   async login(@Body() loginDto: LoginDto) {
     try {
-      // Buscar usuario por email
       const user = await this.userRepository.findByEmail(loginDto.email);
 
-      // Verificar que el usuario esté activo
       if (!user.isActive()) {
-        throw new UnauthorizedException('Usuario inactivo');
+        throw new UnauthorizedException('Inactive user');
       }
 
-      // Verificar contraseña (la entidad de ORM tiene el método comparePassword)
       const ormUser = await this.userRepository.findOne({
         email: loginDto.email,
       });
 
       const isPasswordValid = await ormUser.comparePassword(loginDto.password);
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException('Invalid credentials');
       }
 
-      // Verificar si el usuario tiene 2FA habilitado
       if (user.isTwoFactorEnabled()) {
         return {
           requiresTwoFactor: true,
@@ -110,7 +106,6 @@ export class AuthController {
         };
       }
 
-      // Generar token JWT
       const payload = {
         sub: user.getId(),
         email: user.getEmail(),
@@ -128,35 +123,32 @@ export class AuthController {
         },
       };
     } catch (error) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
   }
 
   @Post('2fa/verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Verificar código de autenticación de dos factores',
+    summary: 'Verify two-factor authentication code',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Verificación exitosa',
+    description: 'Successful verification',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Código inválido',
+    description: 'Invalid code',
   })
   async verifyTwoFactorAuth(@Body() twoFactorAuthDto: TwoFactorAuthDto) {
     try {
-      // Verificar el token 2FA
       await this.verifyTwoFactorAuthUseCase.execute({
         userId: twoFactorAuthDto.userId,
         token: twoFactorAuthDto.token,
       });
 
-      // Si la verificación es exitosa, buscar el usuario
       const user = await this.userRepository.findById(twoFactorAuthDto.userId);
 
-      // Generar token JWT
       const payload = {
         sub: user.getId(),
         email: user.getEmail(),
@@ -174,17 +166,17 @@ export class AuthController {
         },
       };
     } catch (error) {
-      throw new UnauthorizedException('Código inválido o expirado');
+      throw new UnauthorizedException('Invalid or expired code');
     }
   }
 
   @Post('2fa/enable')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Habilitar autenticación de dos factores' })
+  @ApiOperation({ summary: 'Enable two-factor authentication' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'QR generado exitosamente',
+    description: 'QR code generated successfully',
   })
   async enableTwoFactorAuth(@User() user) {
     const result = await this.enableTwoFactorAuthUseCase.execute({
@@ -199,10 +191,10 @@ export class AuthController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
+  @ApiOperation({ summary: 'Get authenticated user profile' })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Perfil obtenido exitosamente',
+    description: 'Profile retrieved successfully',
   })
   async getProfile(@User() user) {
     const userEntity = await this.userRepository.findById(user.id);

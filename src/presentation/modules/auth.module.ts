@@ -11,8 +11,6 @@ import { AwsModule } from '../../infrastructure/services/aws/aws.module';
 import { JwtStrategy } from '../../infrastructure/services/auth/jwt.strategy';
 import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.module';
 
-// Otras importaciones necesarias...
-
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -28,7 +26,7 @@ import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.modu
     }),
     UserModule,
     TwoFactorAuthModule,
-    AwsModule, // Importa el módulo que contiene S3Service
+    AwsModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -36,8 +34,6 @@ import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.modu
     RegisterUserUseCase,
     EnableTwoFactorAuthUseCase,
     VerifyTwoFactorAuthUseCase,
-    
-    // Otros casos de uso y servicios que necesites
   ],
   exports: [
     JwtModule,

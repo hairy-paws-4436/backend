@@ -64,8 +64,7 @@ import {
   
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
-  
-    // Relaciones
+
     @ManyToOne(() => AnimalEntity, (animal) => animal.adoptionRequests)
     @JoinColumn({ name: 'animal_id' })
     animal: AnimalEntity;

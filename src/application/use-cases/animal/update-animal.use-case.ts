@@ -31,10 +31,8 @@ export class UpdateAnimalUseCase {
 
   async execute(animalId: string, updateAnimalDto: UpdateAnimalDto): Promise<AnimalEntity> {
     try {
-      // Obtener la mascota actual
       const animal = await this.animalRepository.findById(animalId);
-      
-      // Actualizar campos básicos
+
       animal.updateInfo(
         updateAnimalDto.name,
         updateAnimalDto.type,
@@ -47,8 +45,7 @@ export class UpdateAnimalUseCase {
         updateAnimalDto.vaccinated,
         updateAnimalDto.sterilized,
       );
-      
-      // Actualizar disponibilidad para adopción
+
       if (updateAnimalDto.availableForAdoption !== undefined) {
         if (updateAnimalDto.availableForAdoption) {
           animal.makeAvailableForAdoption();
@@ -56,53 +53,39 @@ export class UpdateAnimalUseCase {
           animal.makeUnavailableForAdoption();
         }
       }
-      
-      // Gestionar imágenes si es necesario
+
       let newImageUrls: string[] = [...animal.getImages()];
-      
-      // Si se indica eliminar imágenes actuales
+
       if (updateAnimalDto.removeCurrentImages) {
-        // Eliminar imágenes actuales de S3
         const currentImages = animal.getImages();
-        
-        const deletePromises = currentImages.map(imageUrl => 
+        const deletePromises = currentImages.map(imageUrl =>
           this.s3Service.deleteFile(imageUrl).catch(error => {
-            console.error(`Error al eliminar imagen ${imageUrl}: ${error.message}`);
-            // No interrumpir el proceso si falla la eliminación de una imagen
+            console.error(`Error deleting image ${imageUrl}: ${error.message}`);
           })
         );
-        
         await Promise.all(deletePromises);
-        
-        // Vaciar el array de imágenes
         newImageUrls = [];
       }
-      
-      // Si hay nuevas imágenes, subirlas
+
       if (updateAnimalDto.images && updateAnimalDto.images.length > 0) {
         const imageBuffers = updateAnimalDto.images.map(file => file.buffer);
         const originalNames = updateAnimalDto.images.map(file => file.originalname);
-        
         const uploadedImageUrls = await this.s3Service.uploadMultipleFiles(
           imageBuffers,
           'animals',
           originalNames,
         );
-        
-        // Agregar las nuevas URLs al array
         newImageUrls = [...newImageUrls, ...uploadedImageUrls];
       }
-      
-      // Actualizar las imágenes en la entidad
+
       animal.setImages(newImageUrls);
-      
-      // Guardar los cambios
+
       return await this.animalRepository.update(animalId, animal);
     } catch (error) {
       if (error instanceof BusinessRuleValidationException) {
         throw error;
       }
-      throw new Error(`Error al actualizar mascota: ${error.message}`);
+      throw new Error(`Error updating animal: ${error.message}`);
     }
   }
 }

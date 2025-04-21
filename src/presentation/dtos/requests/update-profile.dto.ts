@@ -9,53 +9,52 @@ import {
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({
-    description: 'Nombre del usuario',
+    description: 'User first name',
     example: 'Juan',
   })
-  @IsString({ message: 'El nombre debe ser una cadena de texto' })
+  @IsString({ message: 'The first name must be a string' })
   @IsOptional()
-  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
-  @MaxLength(50, { message: 'El nombre no puede exceder los 50 caracteres' })
+  @MinLength(2, { message: 'The first name must have at least 2 characters' })
+  @MaxLength(50, { message: 'The first name cannot exceed 50 characters' })
   firstName?: string;
 
   @ApiPropertyOptional({
-    description: 'Apellido del usuario',
+    description: 'User last name',
     example: 'Pérez',
   })
-  @IsString({ message: 'El apellido debe ser una cadena de texto' })
+  @IsString({ message: 'The last name must be a string' })
   @IsOptional()
-  @MinLength(2, { message: 'El apellido debe tener al menos 2 caracteres' })
-  @MaxLength(50, { message: 'El apellido no puede exceder los 50 caracteres' })
+  @MinLength(2, { message: 'The last name must have at least 2 characters' })
+  @MaxLength(50, { message: 'The last name cannot exceed 50 characters' })
   lastName?: string;
 
   @ApiPropertyOptional({
-    description: 'Número de teléfono (formato peruano, 9 dígitos)',
+    description: 'Phone number (Peruvian format, 9 digits)',
     example: '987654321',
   })
-  @IsString({ message: 'El número de teléfono debe ser una cadena de texto' })
+  @IsString({ message: 'The phone number must be a string' })
   @IsOptional()
   @Matches(/^9\d{8}$/, {
-    message: 'El número telefónico debe comenzar con 9 y tener 9 dígitos en total (formato peruano)',
+    message: 'The phone number must start with 9 and have 9 digits in total (Peruvian format)',
   })
   phoneNumber?: string;
 
   @ApiPropertyOptional({
-    description: 'Dirección del usuario',
+    description: 'User address',
     example: 'Av. Example 123, Lima',
   })
-  @IsString({ message: 'La dirección debe ser una cadena de texto' })
+  @IsString({ message: 'The address must be a string' })
   @IsOptional()
-  @MaxLength(255, { message: 'La dirección no puede exceder los 255 caracteres' })
+  @MaxLength(255, { message: 'The address cannot exceed 255 characters' })
   address?: string;
 
-@ApiProperty({
-  description: 'Archivo de imagen (opcional)',
-  type: 'string',
-  format: 'binary',
-  required: false
-})
+  @ApiProperty({
+    description: 'Image file (optional)',
+    type: 'string',
+    format: 'binary',
+    required: false
+  })
   @IsOptional()
   profileImage?: Express.Multer.File;
 
-  // profileImage es manejado por el FileInterceptor
 }

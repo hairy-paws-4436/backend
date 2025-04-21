@@ -80,7 +80,6 @@ import { UserEntity } from './user.entity';
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @ManyToOne(() => UserEntity, (user) => user.animals)
     @JoinColumn({ name: 'owner_id' })
     owner: UserEntity;

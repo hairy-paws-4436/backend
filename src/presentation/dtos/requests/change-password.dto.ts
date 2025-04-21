@@ -3,22 +3,22 @@ import { IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 
 export class ChangePasswordDto {
   @ApiProperty({
-    description: 'Contraseña actual',
+    description: 'Current password',
     example: 'Password123!',
   })
-  @IsString({ message: 'La contraseña actual debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La contraseña actual es requerida' })
+  @IsString({ message: 'The current password must be a string' })
+  @IsNotEmpty({ message: 'The current password is required' })
   oldPassword: string;
 
   @ApiProperty({
-    description: 'Nueva contraseña (mínimo 8 caracteres, debe contener al menos una letra mayúscula, una minúscula y un número)',
+    description: 'New password (minimum 8 characters, must contain at least one uppercase letter, one lowercase letter, and one number)',
     example: 'NewPassword456!',
   })
-  @IsString({ message: 'La nueva contraseña debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La nueva contraseña es requerida' })
-  @MinLength(8, { message: 'La nueva contraseña debe tener al menos 8 caracteres' })
+  @IsString({ message: 'The new password must be a string' })
+  @IsNotEmpty({ message: 'The new password is required' })
+  @MinLength(8, { message: 'The new password must be at least 8 characters long' })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'La nueva contraseña debe contener al menos una letra mayúscula, una minúscula y un número o carácter especial',
+    message: 'The new password must contain at least one uppercase letter, one lowercase letter, and one number or special character',
   })
   newPassword: string;
 }

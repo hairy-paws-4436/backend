@@ -21,30 +21,23 @@ export class DonationService {
     private readonly ongRepository: OngRepository,
   ) {}
 
-  /**
-   * Crea una nueva donación
-   * @param createDonationDto Datos para crear la donación
-   * @returns Donación creada
-   */
   async createDonation(createDonationDto: CreateDonationDto) {
-    // Validar tipo de donación y datos requeridos
     if (createDonationDto.type === DonationType.MONEY || createDonationDto.type === DonationType.BOTH) {
       if (!createDonationDto.amount || createDonationDto.amount <= 0) {
         throw new BusinessRuleValidationException(
-          'Para donaciones de dinero, el monto debe ser mayor a 0',
+          'For money donations, the amount must be greater than 0',
         );
       }
     }
-    
+
     if (createDonationDto.type === DonationType.ITEMS || createDonationDto.type === DonationType.BOTH) {
       if (!createDonationDto.items || createDonationDto.items.length === 0) {
         throw new BusinessRuleValidationException(
-          'Para donaciones de artículos, debe especificar al menos un artículo',
+          'For item donations, at least one item must be specified',
         );
       }
     }
-    
-    // Subir recibo si se proporciona
+
     let receiptUrl: string | undefined;
     if (createDonationDto.receipt) {
       receiptUrl = await this.s3Service.uploadFile(
@@ -53,8 +46,7 @@ export class DonationService {
         createDonationDto.receipt.originalname,
       );
     }
-    
-    // Crear donación
+
     const donationData = {
       donorId: createDonationDto.donorId,
       ongId: createDonationDto.ongId,
@@ -65,10 +57,9 @@ export class DonationService {
       notes: createDonationDto.notes,
       receiptUrl,
     };
-    
+
     const donation = await this.donationRepository.create(donationData);
-    
-    // Crear items de donación si aplica
+
     if (createDonationDto.items && Array.isArray(createDonationDto.items)) {
       const itemsData = createDonationDto.items.map(item => ({
         donationId: donation.id,
@@ -76,138 +67,96 @@ export class DonationService {
         quantity: item.quantity,
         description: item.description,
       }));
-      
+
       await this.donationItemRepository.createMany(itemsData);
     }
-    
-    // Obtener donación completa con items
+
     const completeDonation = await this.getDonationById(donation.id);
-    
+
     try {
-      // Obtener la ONG para encontrar el userId correcto
       const ong = await this.ongRepository.findById(createDonationDto.ongId);
-      
-      // Enviar notificación al usuario asociado a la ONG
+
       await this.notificationService.create({
-        userId: ong.userId, // Usar el userId de la ONG, no el ongId
+        userId: ong.userId,
         type: NotificationType.DONATION_RECEIVED,
-        title: 'Nueva donación recibida',
-        message: `Has recibido una nueva donación ${createDonationDto.type === DonationType.MONEY ? 'de dinero' : 
-          createDonationDto.type === DonationType.ITEMS ? 'de artículos' : 'de dinero y artículos'}`,
+        title: 'New donation received',
+        message: `You have received a new donation ${createDonationDto.type === DonationType.MONEY ? 'of money' : 
+          createDonationDto.type === DonationType.ITEMS ? 'of items' : 'of money and items'}`,
         referenceId: donation.id,
         referenceType: 'donation',
       });
     } catch (error) {
-      // Log del error pero no interrumpir el flujo si falla la notificación
-      console.error('Error al enviar notificación a la ONG:', error.message);
+      console.error('Error sending notification to ONG:', error.message);
     }
-    
+
     return completeDonation;
   }
 
-  /**
-   * Obtiene donaciones con filtros
-   * @param filters Filtros para las donaciones
-   * @returns Lista de donaciones
-   */
   async getDonations(filters: any = {}) {
     return await this.donationRepository.findAll(filters);
   }
 
-  /**
-   * Obtiene una donación por su ID
-   * @param donationId ID de la donación
-   * @returns Datos de la donación
-   */
   async getDonationById(donationId: string) {
     return await this.donationRepository.findById(donationId);
   }
 
-  /**
-   * Confirma la recepción de una donación
-   * @param donationId ID de la donación
-   * @param confirmerId ID del usuario que confirma
-   * @param notes Notas adicionales
-   * @returns Donación actualizada
-   */
   async confirmDonation(donationId: string, confirmerId: string, notes?: string) {
-    // Verificar si la donación existe y está pendiente
     const donation = await this.donationRepository.findById(donationId);
-    
+
     if (donation.status !== DonationStatus.PENDING) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden confirmar donaciones pendientes',
+        'Only pending donations can be confirmed',
       );
     }
-    
-    // Actualizar donación
+
     const updateData = {
       status: DonationStatus.CONFIRMED,
       confirmationDate: new Date(),
       confirmedBy: confirmerId,
     };
-    
+
     if (notes) {
       updateData['notes'] = notes;
     }
-    
+
     const updatedDonation = await this.donationRepository.update(donationId, updateData);
-    
+
     try {
-      // Enviar notificación al donante
       await this.notificationService.create({
         userId: donation.donorId,
         type: NotificationType.DONATION_CONFIRMED,
-        title: 'Donación confirmada',
-        message: 'Tu donación ha sido confirmada. ¡Gracias por tu apoyo!',
+        title: 'Donation confirmed',
+        message: 'Your donation has been confirmed. Thank you for your support!',
         referenceId: donationId,
         referenceType: 'donation',
       });
     } catch (error) {
-      // Log del error pero no interrumpir el flujo si falla la notificación
-      console.error('Error al enviar notificación al donante:', error.message);
+      console.error('Error sending notification to donor:', error.message);
     }
-    
+
     return updatedDonation;
   }
 
-  /**
-   * Cancela una donación
-   * @param donationId ID de la donación
-   * @returns Donación actualizada
-   */
   async cancelDonation(donationId: string) {
-    // Verificar si la donación existe y está pendiente
     const donation = await this.donationRepository.findById(donationId);
-    
+
     if (donation.status !== DonationStatus.PENDING) {
       throw new BusinessRuleValidationException(
-        'Solo se pueden cancelar donaciones pendientes',
+        'Only pending donations can be canceled',
       );
     }
-    
-    // Actualizar donación
+
     const updatedDonation = await this.donationRepository.update(donationId, {
       status: DonationStatus.CANCELLED,
     });
-    
+
     return updatedDonation;
   }
 
-  /**
-   * Obtiene donaciones por donante
-   * @param donorId ID del donante
-   * @returns Lista de donaciones
-   */
   async getDonationsByDonor(donorId: string) {
     return await this.donationRepository.findByDonorId(donorId);
   }
 
-  /**
-   * Obtiene donaciones por ONG
-   * @param ongId ID de la ONG
-   * @returns Lista de donaciones
-   */
   async getDonationsByOng(ongId: string) {
     return await this.donationRepository.findByOngId(ongId);
   }

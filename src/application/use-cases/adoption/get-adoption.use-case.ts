@@ -16,7 +16,7 @@ export class GetAdoptionUseCase {
       if (error instanceof EntityNotFoundException) {
         throw error;
       }
-      throw new Error(`Error al obtener solicitud de adopción: ${error.message}`);
+      throw new Error(`Error getting adoption request: ${error.message}`);
     }
   }
 }

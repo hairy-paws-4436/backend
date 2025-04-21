@@ -15,103 +15,102 @@ import { Type } from 'class-transformer';
 import { AnimalGender } from 'src/core/domain/animal/value-objects/animal-gender.enum';
 import { AnimalType } from 'src/core/domain/animal/value-objects/animal-type.enum';
 
-
 export class CreateAnimalDto {
   @ApiProperty({
-    description: 'Nombre de la mascota',
+    description: 'Pet name',
     example: 'Rocky',
   })
-  @IsString({ message: 'El nombre debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El nombre es requerido' })
-  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
-  @MaxLength(50, { message: 'El nombre no puede exceder los 50 caracteres' })
+  @IsString({ message: 'The name must be a string' })
+  @IsNotEmpty({ message: 'The name is required' })
+  @MinLength(2, { message: 'The name must be at least 2 characters long' })
+  @MaxLength(50, { message: 'The name cannot exceed 50 characters' })
   name: string;
 
   @ApiProperty({
-    description: 'Tipo de mascota',
+    description: 'Pet type',
     enum: AnimalType,
     example: AnimalType.DOG,
   })
-  @IsEnum(AnimalType, { message: 'Tipo de mascota no válido' })
-  @IsNotEmpty({ message: 'El tipo de mascota es requerido' })
+  @IsEnum(AnimalType, { message: 'Invalid pet type' })
+  @IsNotEmpty({ message: 'The pet type is required' })
   type: AnimalType;
 
   @ApiProperty({
-    description: 'Raza de la mascota',
+    description: 'Pet breed',
     example: 'Labrador',
   })
-  @IsString({ message: 'La raza debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La raza es requerida' })
-  @MaxLength(50, { message: 'La raza no puede exceder los 50 caracteres' })
+  @IsString({ message: 'The breed must be a string' })
+  @IsNotEmpty({ message: 'The breed is required' })
+  @MaxLength(50, { message: 'The breed cannot exceed 50 characters' })
   breed: string;
 
   @ApiProperty({
-    description: 'Edad de la mascota en años',
+    description: 'Pet age in years',
     example: 3,
   })
-  @IsNumber({}, { message: 'La edad debe ser un número' })
+  @IsNumber({}, { message: 'The age must be a number' })
   @Type(() => Number)
-  @Min(0, { message: 'La edad no puede ser negativa' })
-  @Max(100, { message: 'La edad parece ser demasiado alta' })
+  @Min(0, { message: 'The age cannot be negative' })
+  @Max(100, { message: 'The age seems too high' })
   age: number;
 
   @ApiProperty({
-    description: 'Género de la mascota',
+    description: 'Pet gender',
     enum: AnimalGender,
     example: AnimalGender.MALE,
   })
-  @IsEnum(AnimalGender, { message: 'Género de mascota no válido' })
-  @IsNotEmpty({ message: 'El género de la mascota es requerido' })
+  @IsEnum(AnimalGender, { message: 'Invalid pet gender' })
+  @IsNotEmpty({ message: 'The pet gender is required' })
   gender: AnimalGender;
 
   @ApiProperty({
-    description: 'Descripción de la mascota',
-    example: 'Labrador amigable y juguetón, le encanta estar con personas y otros perros.',
+    description: 'Pet description',
+    example: 'Friendly and playful Labrador, loves being around people and other dogs.',
   })
-  @IsString({ message: 'La descripción debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La descripción es requerida' })
-  @MinLength(10, { message: 'La descripción debe tener al menos 10 caracteres' })
-  @MaxLength(1000, { message: 'La descripción no puede exceder los 1000 caracteres' })
+  @IsString({ message: 'The description must be a string' })
+  @IsNotEmpty({ message: 'The description is required' })
+  @MinLength(10, { message: 'The description must be at least 10 characters long' })
+  @MaxLength(1000, { message: 'The description cannot exceed 1000 characters' })
   description: string;
 
   @ApiPropertyOptional({
-    description: 'Peso de la mascota en kg',
+    description: 'Pet weight in kg',
     example: 15.5,
   })
-  @IsNumber({}, { message: 'El peso debe ser un número' })
+  @IsNumber({}, { message: 'The weight must be a number' })
   @Type(() => Number)
-  @Min(0.1, { message: 'El peso debe ser mayor que 0' })
-  @Max(500, { message: 'El peso parece ser demasiado alto' })
+  @Min(0.1, { message: 'The weight must be greater than 0' })
+  @Max(500, { message: 'The weight seems too high' })
   @IsOptional()
   weight?: number;
 
   @ApiPropertyOptional({
-    description: 'Detalles de salud de la mascota',
-    example: 'Vacunas al día, desparasitado recientemente.',
+    description: 'Pet health details',
+    example: 'Vaccines up to date, recently dewormed.',
   })
-  @IsString({ message: 'Los detalles de salud deben ser una cadena de texto' })
+  @IsString({ message: 'Health details must be a string' })
   @IsOptional()
-  @MaxLength(1000, { message: 'Los detalles de salud no pueden exceder los 1000 caracteres' })
+  @MaxLength(1000, { message: 'Health details cannot exceed 1000 characters' })
   healthDetails?: string;
 
   @ApiProperty({
-    description: 'Indica si la mascota está vacunada',
+    description: 'Indicates whether the pet is vaccinated',
     example: true,
   })
-  @IsBoolean({ message: 'El campo vacunado debe ser un valor booleano' })
+  @IsBoolean({ message: 'The vaccinated field must be a boolean value' })
   @Type(() => Boolean)
   vaccinated: boolean;
 
   @ApiProperty({
-    description: 'Indica si la mascota está esterilizada',
+    description: 'Indicates whether the pet is sterilized',
     example: true,
   })
-  @IsBoolean({ message: 'El campo esterilizado debe ser un valor booleano' })
+  @IsBoolean({ message: 'The sterilized field must be a boolean value' })
   @Type(() => Boolean)
   sterilized: boolean;
 
   @ApiProperty({
-    description: 'Imágenes de la mascota (máximo 5)',
+    description: 'Pet images (maximum 5)',
     type: 'array',
     items: {
       type: 'string',

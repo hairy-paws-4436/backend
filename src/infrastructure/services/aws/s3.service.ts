@@ -24,13 +24,6 @@ export class S3Service {
     this.bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME') || '';
   }
 
-  /**
-   * Sube un archivo a S3
-   * @param file Buffer del archivo
-   * @param folder Carpeta donde se guardará (opcional)
-   * @param originalName Nombre original del archivo
-   * @returns URL del archivo subido
-   */
   async uploadFile(
     file: Buffer,
     folder: string = 'general',
@@ -39,42 +32,33 @@ export class S3Service {
     try {
       const fileExtension = originalName.split('.').pop();
       if (!fileExtension) {
-        throw new Error('No se pudo determinar la extensión del archivo.');
+        throw new Error('Could not determine file extension.');
       }
       const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
   
-      // Configuración para la subida - QUITAR ACL
       const params = {
         Bucket: this.bucket,
         Key: fileName,
         Body: file,
-        // Eliminar la línea ACL: 'public-read'
         ContentDisposition: 'inline',
         ContentType: this.getContentType(fileExtension),
       };
   
-      // Subir a S3 usando comando de v3
       const command = new PutObjectCommand(params);
       await this.s3Client.send(command);
       
-      // Construir la URL manualmente
       const fileUrl = `https://${this.bucket}.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${fileName}`;
-      this.logger.log(`Archivo subido correctamente: ${fileUrl}`);
+      this.logger.log(`File uploaded successfully: ${fileUrl}`);
   
       return fileUrl;
     } catch (error) {
-      this.logger.error(`Error al subir archivo a S3: ${error.message}`);
+      this.logger.error(`Error uploading file to S3: ${error.message}`);
       throw error;
     }
   }
 
-  /**
-   * Elimina un archivo de S3
-   * @param fileUrl URL completa del archivo a eliminar
-   */
   async deleteFile(fileUrl: string): Promise<void> {
     try {
-      // Extraer la clave del archivo de la URL
       const key = this.getKeyFromUrl(fileUrl);
 
       const params = {
@@ -82,24 +66,16 @@ export class S3Service {
         Key: key,
       };
 
-      // Eliminar usando comando de v3
       const command = new DeleteObjectCommand(params);
       await this.s3Client.send(command);
       
-      this.logger.log(`Archivo eliminado correctamente: ${key}`);
+      this.logger.log(`File deleted successfully: ${key}`);
     } catch (error) {
-      this.logger.error(`Error al eliminar archivo de S3: ${error.message}`);
+      this.logger.error(`Error deleting file from S3: ${error.message}`);
       throw error;
     }
   }
 
-  /**
-   * Sube múltiples archivos a S3
-   * @param files Array de buffers de archivos
-   * @param folder Carpeta donde se guardarán
-   * @param originalNames Array de nombres originales de los archivos
-   * @returns Array de URLs de los archivos subidos
-   */
   async uploadMultipleFiles(
     files: Buffer[],
     folder: string = 'general',
@@ -112,28 +88,16 @@ export class S3Service {
 
       return await Promise.all(uploadPromises);
     } catch (error) {
-      this.logger.error(
-        `Error al subir múltiples archivos a S3: ${error.message}`,
-      );
+      this.logger.error(`Error uploading multiple files to S3: ${error.message}`);
       throw error;
     }
   }
 
-  /**
-   * Extrae la clave de un archivo de su URL
-   * @param fileUrl URL del archivo
-   * @returns Clave del archivo
-   */
   private getKeyFromUrl(fileUrl: string): string {
     const urlParts = fileUrl.split('/');
     return urlParts.slice(3).join('/');
   }
 
-  /**
-   * Determina el tipo de contenido en base a la extensión
-   * @param extension Extensión del archivo
-   * @returns Tipo de contenido MIME
-   */
   private getContentType(extension: string): string {
     const contentTypes = {
       jpg: 'image/jpeg',

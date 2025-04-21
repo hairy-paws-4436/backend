@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { AdoptionEntity } from '../../../core/domain/adoption/adoption.entity';
-
 import { AnimalRepository } from '../../../infrastructure/database/mysql/repositories/animal.repository';
 import { NotificationService } from '../../../infrastructure/services/notification/notification.service';
 import { AdoptionType } from '../../../core/domain/adoption/value-objects/adoption-type.enum';
@@ -26,24 +25,20 @@ export class RequestAdoptionUseCase {
 
   async execute(requestAdoptionDto: RequestAdoptionDto): Promise<AdoptionEntity> {
     try {
-      // Obtener información del animal
       const animal = await this.animalRepository.findById(requestAdoptionDto.animalId);
       
-      // Verificar si el animal está disponible para adopción
       if (!animal.canBeAdopted()) {
         throw new BusinessRuleValidationException(
-          'Esta mascota no está disponible para adopción en este momento',
+          'This pet is not available for adoption at this time',
         );
       }
       
-      // Verificar que el adoptante no sea el dueño
       if (animal.getOwnerId() === requestAdoptionDto.adopterId) {
         throw new BusinessRuleValidationException(
-          'No puedes solicitar adoptar tu propia mascota',
+          'You cannot request to adopt your own pet',
         );
       }
       
-      // Verificar que no haya una solicitud pendiente del mismo adoptante para el mismo animal
       const existingRequest = await this.adoptionRepository.exists({
         animalId: requestAdoptionDto.animalId,
         adopterId: requestAdoptionDto.adopterId,
@@ -52,47 +47,43 @@ export class RequestAdoptionUseCase {
       
       if (existingRequest) {
         throw new BusinessRuleValidationException(
-          'Ya tienes una solicitud pendiente para esta mascota',
+          'You already have a pending request for this pet',
         );
       }
       
-      // Verificar la fecha de visita si es una solicitud de visita
       if (requestAdoptionDto.type === AdoptionType.VISIT && !requestAdoptionDto.visitDate) {
         throw new BusinessRuleValidationException(
-          'Debes proporcionar una fecha de visita',
+          'You must provide a visit date',
         );
       }
       
-      // Crear entidad de adopción
       const adoptionEntity = new AdoptionEntity(
-        null, // ID será generado
+        null,
         requestAdoptionDto.animalId,
         animal.getOwnerId(),
         requestAdoptionDto.adopterId,
         requestAdoptionDto.type,
-        undefined, // estado pendiente por defecto
-        new Date(), // fecha de solicitud actual
-        undefined, // fecha de aprobación
-        undefined, // fecha de rechazo
-        requestAdoptionDto.visitDate, // fecha de visita (para solicitudes de visita)
-        requestAdoptionDto.notes, // notas opcionales
+        undefined,
+        new Date(),
+        undefined,
+        undefined,
+        requestAdoptionDto.visitDate,
+        requestAdoptionDto.notes,
       );
       
-      // Guardar en el repositorio
       const createdAdoption = await this.adoptionRepository.create(adoptionEntity);
       
-      // Enviar notificación al dueño
       const notificationType = requestAdoptionDto.type === AdoptionType.ADOPTION
         ? NotificationType.ADOPTION_REQUEST
         : NotificationType.VISIT_REQUEST;
       
       const notificationTitle = requestAdoptionDto.type === AdoptionType.ADOPTION
-        ? 'Nueva solicitud de adopción'
-        : 'Nueva solicitud de visita';
+        ? 'New adoption request'
+        : 'New visit request';
       
       const notificationMessage = requestAdoptionDto.type === AdoptionType.ADOPTION
-        ? `Has recibido una solicitud para adoptar a ${animal.getName()}`
-        : `Has recibido una solicitud para visitar a ${animal.getName()}`;
+        ? `You have received a request to adopt ${animal.getName()}`
+        : `You have received a request to visit ${animal.getName()}`;
       
       await this.notificationService.create({
         userId: animal.getOwnerId(),
@@ -111,7 +102,7 @@ export class RequestAdoptionUseCase {
       ) {
         throw error;
       }
-      throw new Error(`Error al solicitar adopción: ${error.message}`);
+      throw new Error(`Error requesting adoption: ${error.message}`);
     }
   }
 }

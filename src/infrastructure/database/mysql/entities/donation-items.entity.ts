@@ -34,7 +34,6 @@ import {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @ManyToOne(() => DonationEntity, (donation) => donation.items, {
       onDelete: 'CASCADE',
     })

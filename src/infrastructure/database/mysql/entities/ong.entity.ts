@@ -72,7 +72,6 @@ import { DonationEntity } from './donation.entity';
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @OneToOne(() => UserEntity)
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;

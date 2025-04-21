@@ -27,7 +27,7 @@ export class NotificationRepository implements INotificationRepository {
     });
 
     if (!notification) {
-      throw new EntityNotFoundException('Notificación', id);
+      throw new EntityNotFoundException('Notification', id);
     }
 
     return notification;
@@ -40,7 +40,7 @@ export class NotificationRepository implements INotificationRepository {
     });
 
     if (!notification) {
-      throw new EntityNotFoundException('Notificación');
+      throw new EntityNotFoundException('Notification');
     }
 
     return notification;
@@ -61,7 +61,7 @@ export class NotificationRepository implements INotificationRepository {
   }
 
   async update(id: string, entity: Partial<NotificationEntity>): Promise<NotificationEntity> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.notificationRepository.update(id, entity);
     
     return this.findById(id);
@@ -79,7 +79,7 @@ export class NotificationRepository implements INotificationRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.findById(id); // Validar que existe
+    await this.findById(id);
     await this.notificationRepository.delete(id);
   }
 

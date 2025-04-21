@@ -32,7 +32,7 @@ export class AdoptionRepository implements IAdoptionRepository {
     });
 
     if (!adoption) {
-      throw new EntityNotFoundException('Solicitud de adopción', id);
+      throw new EntityNotFoundException('Adoption request', id);
     }
 
     return this.toDomainEntity(adoption);
@@ -45,7 +45,7 @@ export class AdoptionRepository implements IAdoptionRepository {
     });
 
     if (!adoption) {
-      throw new EntityNotFoundException('Solicitud de adopción');
+      throw new EntityNotFoundException('Adoption request');
     }
 
     return this.toDomainEntity(adoption);
@@ -116,7 +116,6 @@ export class AdoptionRepository implements IAdoptionRepository {
     return count > 0;
   }
 
-  // Métodos de mapeo entre entidades de dominio y ORM
   private toDomainEntity(ormEntity: AdoptionOrmEntity): AdoptionDomainEntity {
     return new AdoptionDomainEntity(
       ormEntity.id,

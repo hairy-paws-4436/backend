@@ -16,7 +16,7 @@ export class GetAnimalUseCase {
       if (error instanceof EntityNotFoundException) {
         throw error;
       }
-      throw new Error(`Error al obtener mascota: ${error.message}`);
+      throw new Error(`Error getting pet: ${error.message}`);
     }
   }
 }

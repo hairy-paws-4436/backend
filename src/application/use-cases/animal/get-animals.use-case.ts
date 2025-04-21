@@ -22,10 +22,8 @@ export class GetAnimalsUseCase {
 
   async execute(filters?: GetAnimalsFilters): Promise<AnimalEntity[]> {
     try {
-      // Preparar filtros avanzados si es necesario
       let processedFilters: any = { ...filters };
       
-      // Filtrar por rango de edad si se especifica
       if (filters?.minAge !== undefined || filters?.maxAge !== undefined) {
         processedFilters.age = {};
         
@@ -37,14 +35,13 @@ export class GetAnimalsUseCase {
           processedFilters.age = { ...processedFilters.age, $lte: filters.maxAge };
         }
         
-        // Eliminar los filtros originales
         delete processedFilters.minAge;
         delete processedFilters.maxAge;
       }
       
       return await this.animalRepository.findAll(processedFilters);
     } catch (error) {
-      throw new Error(`Error al obtener mascotas: ${error.message}`);
+      throw new Error(`Error getting animals: ${error.message}`);
     }
   }
 }

@@ -4,7 +4,6 @@ import { AnimalGender } from './value-objects/animal-gender.enum';
 import { AnimalStatus } from './value-objects/animal-status';
 import { AnimalType } from './value-objects/animal-type.enum';
 
-
 export class AnimalEntity {
   private readonly id: string;
   private name: string;
@@ -43,7 +42,6 @@ export class AnimalEntity {
     createdAt?: Date,
     updatedAt?: Date,
   ) {
-    // Validaciones de dominio
     this.validateName(name);
     this.validateAge(age);
     this.validateDescription(description);
@@ -68,7 +66,6 @@ export class AnimalEntity {
     this.updatedAt = updatedAt || new Date();
   }
 
-  // Getters
   getId(): string {
     return this.id;
   }
@@ -137,7 +134,6 @@ export class AnimalEntity {
     return this.updatedAt;
   }
 
-  // Setters
   updateInfo(
     name?: string,
     type?: AnimalType,
@@ -230,17 +226,16 @@ export class AnimalEntity {
     this.updatedAt = new Date();
   }
 
-  // Validadores
   private validateName(name: string): void {
     if (!name || name.trim().length < 2) {
       throw new BusinessRuleValidationException(
-        'El nombre debe tener al menos 2 caracteres',
+        'Name must have at least 2 characters',
       );
     }
 
     if (name.trim().length > 50) {
       throw new BusinessRuleValidationException(
-        'El nombre no puede exceder los 50 caracteres',
+        'Name cannot exceed 50 characters',
       );
     }
   }
@@ -248,13 +243,13 @@ export class AnimalEntity {
   private validateAge(age: number): void {
     if (age < 0) {
       throw new BusinessRuleValidationException(
-        'La edad no puede ser negativa',
+        'Age cannot be negative',
       );
     }
 
     if (age > 100) {
       throw new BusinessRuleValidationException(
-        'La edad parece ser demasiado alta',
+        'Age seems to be too high',
       );
     }
   }
@@ -262,13 +257,13 @@ export class AnimalEntity {
   private validateDescription(description: string): void {
     if (!description || description.trim().length < 10) {
       throw new BusinessRuleValidationException(
-        'La descripción debe tener al menos 10 caracteres',
+        'Description must have at least 10 characters',
       );
     }
 
     if (description.trim().length > 1000) {
       throw new BusinessRuleValidationException(
-        'La descripción no puede exceder los 1000 caracteres',
+        'Description cannot exceed 1000 characters',
       );
     }
   }
@@ -276,18 +271,17 @@ export class AnimalEntity {
   private validateWeight(weight: number): void {
     if (weight <= 0) {
       throw new BusinessRuleValidationException(
-        'El peso debe ser mayor que 0',
+        'Weight must be greater than 0',
       );
     }
 
     if (weight > 500) {
       throw new BusinessRuleValidationException(
-        'El peso parece ser demasiado alto',
+        'Weight seems to be too high',
       );
     }
   }
 
-  // Métodos de negocio
   canBeAdopted(): boolean {
     return this.isAvailableForAdoption() && this.status === AnimalStatus.AVAILABLE;
   }

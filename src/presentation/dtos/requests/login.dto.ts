@@ -3,19 +3,19 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class LoginDto {
   @ApiProperty({
-    description: 'Correo electrónico del usuario',
-    example: 'usuario@example.com',
+    description: 'User email address',
+    example: 'user@example.com',
   })
-  @IsEmail({}, { message: 'El formato del correo electrónico no es válido' })
-  @IsNotEmpty({ message: 'El correo electrónico es requerido' })
+  @IsEmail({}, { message: 'Email format is not valid' })
+  @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
   @ApiProperty({
-    description: 'Contraseña del usuario',
+    description: 'User password',
     example: 'Password123!',
   })
-  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'La contraseña es requerida' })
-  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
+  @IsString({ message: 'Password must be a string' })
+  @IsNotEmpty({ message: 'Password is required' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
 }

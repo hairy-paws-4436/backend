@@ -15,16 +15,9 @@ async function bootstrap() {
   const appName = configService.get<string>('APP_NAME') || 'HairyPaws';
   const appVersion = configService.get<string>('APP_VERSION') || '1.0';
 
-  // Prefijo global para todas las rutas
   app.setGlobalPrefix(apiPrefix);
-
-  // Middleware de seguridad
   app.use(helmet());
-  
-  // CORS
   app.enableCors();
-
-  // Validación global
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -36,13 +29,11 @@ async function bootstrap() {
     }),
   );
 
-  // Filtro global de excepciones
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  // Swagger
   const config = new DocumentBuilder()
     .setTitle(`${appName} API`)
-    .setDescription(`API de adopción de mascotas ${appName}`)
+    .setDescription(`${appName} pet adoption API`)
     .setVersion(appVersion)
     .addBearerAuth()
     .build();
@@ -50,7 +41,7 @@ async function bootstrap() {
   SwaggerModule.setup(`${apiPrefix}/docs`, app, document);
 
   await app.listen(port);
-  console.log(`Aplicación corriendo en: http://localhost:${port}/${apiPrefix}`);
-  console.log(`Documentación: http://localhost:${port}/${apiPrefix}/docs`);
+  console.log(`Application running at: http://localhost:${port}/${apiPrefix}`);
+  console.log(`Documentation: http://localhost:${port}/${apiPrefix}/docs`);
 }
 bootstrap();

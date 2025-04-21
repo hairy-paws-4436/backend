@@ -55,7 +55,6 @@ import {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
   
-    // Relaciones
     @ManyToOne(() => OngEntity, (ong) => ong.events)
     @JoinColumn({ name: 'ong_id' })
     ong: OngEntity;

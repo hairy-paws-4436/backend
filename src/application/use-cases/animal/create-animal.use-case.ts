@@ -30,7 +30,6 @@ export class CreateAnimalUseCase {
 
   async execute(createAnimalDto: CreateAnimalDto): Promise<AnimalEntity> {
     try {
-      // Procesar y subir imágenes si existen
       let imageUrls: string[] = [];
       if (createAnimalDto.images && createAnimalDto.images.length > 0) {
         const imageBuffers = createAnimalDto.images.map(file => file.buffer);
@@ -42,9 +41,8 @@ export class CreateAnimalUseCase {
         );
       }
 
-      // Crear entidad de dominio
       const animalEntity = new AnimalEntity(
-        null, // ID será generado
+        null,
         createAnimalDto.name,
         createAnimalDto.type,
         createAnimalDto.breed,
@@ -53,22 +51,20 @@ export class CreateAnimalUseCase {
         createAnimalDto.description,
         createAnimalDto.ownerId,
         imageUrls,
-        undefined, // estado por defecto
-        true, // disponible para adopción por defecto
+        undefined,
+        true,
         createAnimalDto.weight,
         createAnimalDto.healthDetails,
         createAnimalDto.vaccinated,
         createAnimalDto.sterilized
       );
 
-      // Guardar en el repositorio
       return await this.animalRepository.create(animalEntity);
     } catch (error) {
-      // Si ocurre un error y ya se subieron imágenes, eliminarlas
       if (error instanceof BusinessRuleValidationException) {
         throw error;
       }
-      throw new Error(`Error al crear animal: ${error.message}`);
+      throw new Error(`Error creating animal: ${error.message}`);
     }
   }
 }
