@@ -172,7 +172,7 @@ describe('AuthController (Integration)', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          envFilePath: '.env.test',
+          envFilePath: '.env',
         }),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
