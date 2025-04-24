@@ -3,7 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../infrastructure/database/mysql/repositories/user.repository';
 import { S3Service } from '../../infrastructure/services/aws/s3.service';
 import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
-import { DuplicateEntityException, EntityNotFoundException } from '../../core/exceptions/domain.exception';
+import {
+  DuplicateEntityException,
+  EntityNotFoundException,
+} from '../../core/exceptions/domain.exception';
 import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
 
 interface CreateOngDto {
@@ -21,6 +24,7 @@ interface CreateOngDto {
   bankName?: string;
   interbankAccount?: string;
   logo?: Express.Multer.File;
+  legalDocuments: Express.Multer.File[];
 }
 
 interface UpdateOngDto {
@@ -47,18 +51,20 @@ export class OngService {
   ) {}
 
   async createOng(createOngDto: CreateOngDto) {
-    const rucExists = await this.ongRepository.exists({ ruc: createOngDto.ruc });
+    const rucExists = await this.ongRepository.exists({
+      ruc: createOngDto.ruc,
+    });
     if (rucExists) {
       throw new DuplicateEntityException('NGO', 'RUC', createOngDto.ruc);
     }
-    
+
     const user = await this.userRepository.findById(createOngDto.userId);
-    
+
     if (user.getRole() !== UserRole.ONG) {
       user.changeRole(UserRole.ONG);
       await this.userRepository.update(user.getId(), user);
     }
-    
+
     let logoUrl: string | undefined;
     if (createOngDto.logo) {
       logoUrl = await this.s3Service.uploadFile(
@@ -67,7 +73,20 @@ export class OngService {
         createOngDto.logo.originalname,
       );
     }
-    
+
+    let legalDocumentsUrls: string[] = [];
+    if (createOngDto.legalDocuments && createOngDto.legalDocuments.length > 0) {
+      const documentPromises = createOngDto.legalDocuments.map((doc) =>
+        this.s3Service.uploadFile(
+          doc.buffer,
+          'ong-documents',
+          doc.originalname,
+        ),
+      );
+
+      legalDocumentsUrls = await Promise.all(documentPromises);
+    }
+
     const ongData = {
       userId: createOngDto.userId,
       name: createOngDto.name,
@@ -84,18 +103,19 @@ export class OngService {
       bankAccount: createOngDto.bankAccount,
       bankName: createOngDto.bankName,
       interbankAccount: createOngDto.interbankAccount,
+      legalDocuments: JSON.stringify(legalDocumentsUrls),
     };
-    
+
     return await this.ongRepository.create(ongData);
   }
 
   async getAllOngs(verified?: boolean) {
     const filters = {};
-    
+
     if (verified !== undefined) {
       filters['verified'] = verified;
     }
-    
+
     return await this.ongRepository.findAll(filters);
   }
 
@@ -116,16 +136,16 @@ export class OngService {
 
   async updateOng(ongId: string, updateOngDto: UpdateOngDto) {
     const ong = await this.ongRepository.findById(ongId);
-    
+
     const updateData = { ...updateOngDto };
-    
+
     if (updateOngDto.logo) {
       const logoUrl = await this.s3Service.uploadFile(
         updateOngDto.logo.buffer,
         'ongs',
         updateOngDto.logo.originalname,
       );
-      
+
       if (ong.logoUrl) {
         try {
           await this.s3Service.deleteFile(ong.logoUrl);
@@ -133,11 +153,11 @@ export class OngService {
           console.error(`Error deleting previous logo: ${error.message}`);
         }
       }
-      
+
       updateData['logoUrl'] = logoUrl;
       delete updateData.logo;
     }
-    
+
     return await this.ongRepository.update(ongId, updateData);
   }
 

@@ -12,8 +12,9 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   ForbiddenException,
+  UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
@@ -81,6 +82,17 @@ export class OngController {
       cb(null, true);
     },
   }))
+  @UseInterceptors(FilesInterceptor('legalDocuments', 5, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/) && !file.mimetype.match(/application\/pdf$/)) {
+        return cb(new Error('Only images or PDFs are allowed'), false);
+      }
+      cb(null, true);
+    },
+  }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Register a new NGO' })
   @ApiResponse({
@@ -89,6 +101,7 @@ export class OngController {
   })
   async createOng(
     @Body() createOngDto: CreateOngDto,
+    @UploadedFiles() legalDocuments: Express.Multer.File[],
     @UploadedFile() logo: Express.Multer.File,
     @User() user,
   ) {
@@ -101,6 +114,7 @@ export class OngController {
       ...createOngDto,
       userId: user.id,
       logo,
+      legalDocuments,
     });
 
     return ong;

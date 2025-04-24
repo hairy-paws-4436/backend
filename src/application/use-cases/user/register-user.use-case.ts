@@ -5,6 +5,7 @@ import { S3Service } from '../../../infrastructure/services/aws/s3.service';
 import { UserRole } from '../../../core/domain/user/value-objects/user-role.enum';
 import { BusinessRuleValidationException, DuplicateEntityException } from '../../../core/exceptions/domain.exception';
 import * as bcrypt from 'bcrypt';
+import { EmailService } from 'src/infrastructure/services/email/email.service';
 
 interface RegisterUserDto {
   email: string;
@@ -12,6 +13,7 @@ interface RegisterUserDto {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  identityDocument: string;
   role: UserRole;
   address?: string;
   profileImage?: Express.Multer.File;
@@ -22,6 +24,7 @@ export class RegisterUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly s3Service: S3Service,
+    private readonly emailService: EmailService,
   ) {}
 
   async execute(registerUserDto: RegisterUserDto): Promise<UserEntity> {
@@ -34,6 +37,11 @@ export class RegisterUserUseCase {
       const phoneExists = await this.userRepository.exists({ phoneNumber: registerUserDto.phoneNumber });
       if (phoneExists) {
         throw new DuplicateEntityException('user', 'phone number', registerUserDto.phoneNumber);
+      }
+
+      const identityDocExists = await this.userRepository.exists({ identityDocument: registerUserDto.identityDocument });
+      if (identityDocExists) {
+        throw new DuplicateEntityException('usuario', 'documento de identidad', registerUserDto.identityDocument);
       }
 
       const hashedPassword = await bcrypt.hash(registerUserDto.password, 10);
@@ -61,9 +69,18 @@ export class RegisterUserUseCase {
         profileImageUrl,
         undefined,
         false,
+        registerUserDto.identityDocument,
       );
 
-      return await this.userRepository.create(userEntity);
+      const createdUser = await this.userRepository.create(userEntity);
+      
+      await this.emailService.sendWelcomeEmail(
+        createdUser.getEmail(),
+        createdUser.getFirstName()
+      );
+
+      return createdUser;
+
     } catch (error) {
       if (error instanceof DuplicateEntityException || error instanceof BusinessRuleValidationException) {
         throw error;

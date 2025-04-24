@@ -36,6 +36,9 @@ import { DonationEntity } from './donation.entity';
     @Column({ name: 'logo_url', length: 255, nullable: true })
     logoUrl: string;
   
+    @Column({ name: 'legal_documents', type: 'json', nullable: true })
+    legalDocuments: string;
+
     @Column({ length: 255 })
     address: string;
   

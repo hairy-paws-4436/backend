@@ -130,6 +130,7 @@ export class UserRepository implements IUserRepository {
       ormEntity.profileImageUrl,
       ormEntity.twoFactorSecret,
       ormEntity.twoFactorEnabled,
+      ormEntity.identityDocument,
       ormEntity.createdAt,
       ormEntity.updatedAt,
     );

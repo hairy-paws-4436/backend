@@ -127,12 +127,24 @@ export class CreateOngDto {
   interbankAccount?: string;
 
   @ApiProperty({
-    description: 'Receipt file (optional)',
+    description: 'Logo file (optional)',
     type: 'string',
     format: 'binary',
     required: false
   })
   @IsOptional()
   logo?: Express.Multer.File;
+
+  @ApiProperty({
+    description: 'Legal documents of the NGO',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+    required: false
+  })
+  @IsOptional()
+  legalDocuments?: Express.Multer.File[];
 
 }

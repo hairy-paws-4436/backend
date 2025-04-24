@@ -60,6 +60,7 @@ export class AuthController {
       phoneNumber: registerDto.phoneNumber,
       role: registerDto.role || UserRole.ADOPTER,
       address: registerDto.address,
+      identityDocument: registerDto.identityDocument
     });
 
     return {

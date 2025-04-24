@@ -10,6 +10,7 @@ import { UserModule } from 'src/presentation/modules/user.module';
 import { AwsModule } from '../../infrastructure/services/aws/aws.module';
 import { JwtStrategy } from '../../infrastructure/services/auth/jwt.strategy';
 import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.module';
+import { EmailModule } from 'src/infrastructure/services/email/email.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.modu
     UserModule,
     TwoFactorAuthModule,
     AwsModule,
+    EmailModule
   ],
   controllers: [AuthController],
   providers: [

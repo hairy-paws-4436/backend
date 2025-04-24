@@ -1,13 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { 
-  IsEmail, 
-  IsEnum, 
-  IsNotEmpty, 
-  IsOptional, 
-  IsString, 
-  Matches, 
-  MaxLength, 
-  MinLength 
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import { UserRole } from 'src/core/domain/user/value-objects/user-role.enum';
 
@@ -21,14 +21,16 @@ export class RegisterDto {
   email: string;
 
   @ApiProperty({
-    description: 'User password (minimum 8 characters, must contain at least one uppercase letter, one lowercase letter, and one number)',
+    description:
+      'User password (minimum 8 characters, must contain at least one uppercase letter, one lowercase letter, and one number)',
     example: 'Password123!',
   })
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number or special character',
+    message:
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number or special character',
   })
   password: string;
 
@@ -59,9 +61,22 @@ export class RegisterDto {
   @IsString({ message: 'Phone number must be a string' })
   @IsNotEmpty({ message: 'Phone number is required' })
   @Matches(/^9\d{8}$/, {
-    message: 'Phone number must start with 9 and have 9 digits in total (Peruvian format)',
+    message:
+      'Phone number must start with 9 and have 9 digits in total (Peruvian format)',
   })
   phoneNumber: string;
+
+  @ApiProperty({
+    description: 'Identification document (Peruvian DNI - 8 digits)',
+    example: '12345678',
+  })
+  @IsString({ message: 'The identification document must be a text string' })
+  @IsNotEmpty({ message: 'The identification document is required' })
+  @Matches(/^\d{8}$/, {
+    message:
+      'The identification document must have 8 digits (Peruvian DNI format)',
+  })
+  identityDocument: string;
 
   @ApiPropertyOptional({
     description: 'User role',
