@@ -8,7 +8,7 @@ import * as path from 'path';
  * Configuración para la base de datos de testing
  */
 export const testDatabaseConfig = {
-  type: 'sqlite',
+  type: 'sqlite' as const,
   database: ':memory:',
   synchronize: true,
   dropSchema: true,

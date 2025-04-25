@@ -133,7 +133,7 @@ export class CreateOngDto {
     required: false
   })
   @IsOptional()
-  logo?: Express.Multer.File;
+  logo: Express.Multer.File;
 
   @ApiProperty({
     description: 'Legal documents of the NGO',

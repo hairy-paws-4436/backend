@@ -14,7 +14,7 @@ import {
   ForbiddenException,
   UploadedFiles,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
@@ -71,28 +71,27 @@ export class OngController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('logo', {
-    limits: {
-      fileSize: 5 * 1024 * 1024,
-    },
-    fileFilter: (req, file, cb) => {
-      if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
-        return cb(new Error('Only image files are allowed (jpg, jpeg, png, gif)'), false);
-      }
-      cb(null, true);
-    },
-  }))
-  @UseInterceptors(FilesInterceptor('legalDocuments', 5, {
-    limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB
-    },
-    fileFilter: (req, file, cb) => {
-      if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/) && !file.mimetype.match(/application\/pdf$/)) {
-        return cb(new Error('Only images or PDFs are allowed'), false);
-      }
-      cb(null, true);
-    },
-  }))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'logo', maxCount: 1 },
+      { name: 'legalDocuments', maxCount: 5 },
+    ], {
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB para ambos
+      },
+      fileFilter: (req, file, cb) => {
+        if (file.fieldname === 'logo' && !file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
+          return cb(new Error('Only image files are allowed for logo (jpg, jpeg, png, gif)'), false);
+        }
+        if (file.fieldname === 'legalDocuments' &&
+          !file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/) &&
+          !file.mimetype.match(/application\/pdf$/)) {
+          return cb(new Error('Only images or PDFs are allowed for legalDocuments'), false);
+        }
+        cb(null, true);
+      },
+    })
+  )
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Register a new NGO' })
   @ApiResponse({
@@ -101,24 +100,27 @@ export class OngController {
   })
   async createOng(
     @Body() createOngDto: CreateOngDto,
-    @UploadedFiles() legalDocuments: Express.Multer.File[],
-    @UploadedFile() logo: Express.Multer.File,
+    @UploadedFiles() files: { logo?: Express.Multer.File[], legalDocuments?: Express.Multer.File[] },
     @User() user,
   ) {
     const hasOng = await this.ongService.hasOng(user.id);
     if (hasOng) {
       throw new ForbiddenException('You already have a registered NGO');
     }
-
+  
+    const logo = files.logo ? files.logo[0] : undefined;
+    const legalDocuments = files.legalDocuments || [];
+  
     const ong = await this.ongService.createOng({
       ...createOngDto,
       userId: user.id,
       logo,
       legalDocuments,
     });
-
+  
     return ong;
   }
+  
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
