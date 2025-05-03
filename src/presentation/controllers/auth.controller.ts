@@ -29,6 +29,7 @@ import { RolesGuard } from '../guards/roles.guard';
 import { LoginDto } from '../dtos/requests/login.dto';
 import { RegisterDto } from '../dtos/requests/register.dto';
 import { TwoFactorAuthDto } from '../dtos/requests/twofa.dto';
+import { GetTwoFactorStatusUseCase } from 'src/application/use-cases/auth/get-twofa-status.use-case';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -37,6 +38,7 @@ export class AuthController {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly enableTwoFactorAuthUseCase: EnableTwoFactorAuthUseCase,
     private readonly verifyTwoFactorAuthUseCase: VerifyTwoFactorAuthUseCase,
+    private readonly getTwoFactorStatusUseCase: GetTwoFactorStatusUseCase,
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
   ) {}
@@ -70,6 +72,28 @@ export class AuthController {
       lastName: user.getLastName(),
       role: user.getRole(),
     };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get authenticated user ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns the authenticated user ID',
+    schema: {
+      type: 'object',
+      properties: {
+        userId: {
+          type: 'string',
+          example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          description: 'The authenticated user ID'
+        }
+      }
+    }
+  })
+  async getAuthenticatedUserId(@User() user) {
+    return { userId: user.id };
   }
 
   @Post('login')
@@ -212,5 +236,28 @@ export class AuthController {
       twoFactorEnabled: userEntity.isTwoFactorEnabled(),
       verified: userEntity.isVerified(),
     };
+  }
+
+  @Get('2fa/status')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user\'s 2FA status' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Returns whether 2FA is enabled for the user',
+    schema: {
+      type: 'object',
+      properties: {
+        enabled: {
+          type: 'boolean',
+          example: true,
+          description: 'Indicates if 2FA is enabled for the user'
+        }
+      }
+    }
+  })
+  async getTwoFactorStatus(@User() user) {
+    const isEnabled = await this.getTwoFactorStatusUseCase.execute(user.id);
+    return { enabled: isEnabled };
   }
 }

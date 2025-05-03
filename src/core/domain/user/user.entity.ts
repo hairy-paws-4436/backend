@@ -191,6 +191,7 @@ export class UserEntity {
     this.twoFactorEnabled = true;
     this.updatedAt = new Date();
   }
+  
 
   disableTwoFactor(): void {
     this.twoFactorEnabled = false;

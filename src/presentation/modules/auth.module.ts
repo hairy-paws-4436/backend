@@ -11,6 +11,7 @@ import { AwsModule } from '../../infrastructure/services/aws/aws.module';
 import { JwtStrategy } from '../../infrastructure/services/auth/jwt.strategy';
 import { TwoFactorAuthModule } from 'src/infrastructure/services/auth/twofa.module';
 import { EmailModule } from 'src/infrastructure/services/email/email.module';
+import { GetTwoFactorStatusUseCase } from 'src/application/use-cases/auth/get-twofa-status.use-case';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { EmailModule } from 'src/infrastructure/services/email/email.module';
     RegisterUserUseCase,
     EnableTwoFactorAuthUseCase,
     VerifyTwoFactorAuthUseCase,
+    GetTwoFactorStatusUseCase
   ],
   exports: [
     JwtModule,

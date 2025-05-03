@@ -113,6 +113,6 @@ export class CreateDonationDto {
     format: 'binary',
     required: false
   })
-  @IsOptional()
-  receipt?: Express.Multer.File;
+
+  receipt: Express.Multer.File;
 }

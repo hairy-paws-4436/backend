@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { NotificationEntity } from '../entities/notification.entity';
 import { INotificationRepository } from '../../../../core/interfaces/repositories/base-repository.interface';
 import { EntityNotFoundException } from '../../../../core/exceptions/domain.exception';
+import { NotificationResponseDto } from 'src/presentation/dtos/response/notification-response.dto';
 
 @Injectable()
 export class NotificationRepository implements INotificationRepository {
@@ -32,6 +33,20 @@ export class NotificationRepository implements INotificationRepository {
 
     return notification;
   }
+
+  async findById2(id: string): Promise<NotificationResponseDto> {
+    const notification = await this.notificationRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    
+    if (!notification) {
+      throw new EntityNotFoundException('Notification', id);
+    }
+    
+    return new NotificationResponseDto(notification);
+  }
+  
 
   async findOne(filters: any): Promise<NotificationEntity> {
     const notification = await this.notificationRepository.findOne({

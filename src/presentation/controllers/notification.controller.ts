@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Query,
   HttpCode,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,17 +17,19 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
+import { GetNotificationUseCase } from 'src/application/use-cases/notification/get-notification.use-case';
 
 @ApiTags('Notifications')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService, private readonly getNotificationUseCase: GetNotificationUseCase) {}
 
   @Get()
   @ApiOperation({ summary: 'Get user notifications' })
@@ -48,6 +51,28 @@ export class NotificationController {
 
     return notifications;
   }
+
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get a notification by ID' })
+  @ApiParam({ name: 'id', description: 'Notification ID' })
+  @ApiResponse({ status: 200, description: 'Notification found' })
+  @ApiResponse({ status: 404, description: 'Notification not found' })
+  async getNotification(
+    @Param('id') id: string,
+    @User() user,
+  ) {
+    const notification = await this.getNotificationUseCase.execute(id);
+    
+    if (notification.user.id !== user.id) {
+      throw new ForbiddenException('You do not have permission to view this notification.');
+    }
+    
+    return notification;
+  }
+
 
   @Post(':id/read')
   @HttpCode(HttpStatus.OK)

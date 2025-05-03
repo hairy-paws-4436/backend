@@ -41,7 +41,7 @@ export class DonationController {
   @Post()
   @UseInterceptors(FileInterceptor('receipt', {
       limits: {
-          fileSize: 5 * 1024 * 1024, // 5MB
+          fileSize: 5 * 1024 * 1024,
       },
       fileFilter: (req, file, cb) => {
           if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/) && !file.mimetype.match(/application\/pdf$/)) {
