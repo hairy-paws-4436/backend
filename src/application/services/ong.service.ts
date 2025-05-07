@@ -7,7 +7,8 @@ import {
   DuplicateEntityException,
   EntityNotFoundException,
 } from '../../core/exceptions/domain.exception';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
+
 
 interface CreateOngDto {
   userId: string;
@@ -68,7 +69,7 @@ export class OngService {
     let logoUrl: string | undefined;
     if (createOngDto.logo) {
       logoUrl = await this.s3Service.uploadFile(
-        createOngDto.logo.buffer,
+        createOngDto.logo.buffer!,
         'ongs',
         createOngDto.logo.originalname,
       );
@@ -78,7 +79,7 @@ export class OngService {
     if (createOngDto.legalDocuments && createOngDto.legalDocuments.length > 0) {
       const documentPromises = createOngDto.legalDocuments.map((doc) =>
         this.s3Service.uploadFile(
-          doc.buffer,
+          doc.buffer!,
           'ong-documents',
           doc.originalname,
         ),
@@ -141,7 +142,7 @@ export class OngService {
 
     if (updateOngDto.logo) {
       const logoUrl = await this.s3Service.uploadFile(
-        updateOngDto.logo.buffer,
+        updateOngDto.logo.buffer!,
         'ongs',
         updateOngDto.logo.originalname,
       );

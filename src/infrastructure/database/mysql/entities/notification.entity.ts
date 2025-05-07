@@ -8,8 +8,9 @@ import {
     JoinColumn,
     Index,
   } from 'typeorm';
-  import { UserEntity } from './user.entity';
-import { NotificationType } from 'src/core/domain/notification/value-objects/notification-type.enum';
+import { NotificationType } from '../../../../core/domain/notification/value-objects/notification-type.enum';
+import { UserEntity } from './user.entity';
+
 
   
   @Entity('notifications')

@@ -13,10 +13,11 @@ import { UserRole } from '../../../../core/domain/user/value-objects/user-role.e
 
 import * as bcrypt from 'bcrypt';
 import { AnimalEntity } from './animal.entity';
-import { UserStatus } from 'src/core/domain/user/value-objects/user-status';
+
 import { AdoptionEntity } from './adoption.entity';
 import { DonationEntity } from './donation.entity';
 import { NotificationEntity } from './notification.entity';
+import { UserStatus } from '../../../../core/domain/user/value-objects/user-status';
 
 @Entity('users')
 export class UserEntity {

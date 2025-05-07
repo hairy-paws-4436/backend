@@ -22,7 +22,8 @@ import {
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
-import { GetNotificationUseCase } from 'src/application/use-cases/notification/get-notification.use-case';
+import { GetNotificationUseCase } from '../../application/use-cases/notification/get-notification.use-case';
+
 
 @ApiTags('Notifications')
 @Controller('notifications')

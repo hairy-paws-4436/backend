@@ -5,7 +5,8 @@ import { NotificationService } from '../../../infrastructure/services/notificati
 import { AdoptionType } from '../../../core/domain/adoption/value-objects/adoption-type.enum';
 import { NotificationType } from '../../../core/domain/notification/value-objects/notification-type.enum';
 import { BusinessRuleValidationException, EntityNotFoundException } from '../../../core/exceptions/domain.exception';
-import { AdoptionRepository } from 'src/infrastructure/database/mysql/repositories/adoption.repository';
+import { AdoptionRepository } from '../../../infrastructure/database/mysql/repositories/adoption.repository';
+
 
 interface RequestAdoptionDto {
   animalId: string;

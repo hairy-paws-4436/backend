@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { NotificationEntity } from '../entities/notification.entity';
 import { INotificationRepository } from '../../../../core/interfaces/repositories/base-repository.interface';
 import { EntityNotFoundException } from '../../../../core/exceptions/domain.exception';
-import { NotificationResponseDto } from 'src/presentation/dtos/response/notification-response.dto';
+import { NotificationResponseDto } from '../../../../presentation/dtos/response/notification-response.dto';
+
 
 @Injectable()
 export class NotificationRepository implements INotificationRepository {

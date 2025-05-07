@@ -11,7 +11,7 @@ import {
   UploadedFiles,
   Query,
   ParseUUIDPipe,
-  HttpStatus,
+  HttpStatus, ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,16 +28,15 @@ import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
-import { Public } from '../decorators/public.decorator';
-import { ForbiddenException } from '@nestjs/common';
-import { CreateAnimalUseCase } from 'src/application/use-cases/animal/create-animal.use-case';
-import { DeleteAnimalUseCase } from 'src/application/use-cases/animal/delete-animal.use-case';
-import { GetAnimalUseCase } from 'src/application/use-cases/animal/get-animal.use-case';
-import { GetAnimalsUseCase } from 'src/application/use-cases/animal/get-animals.use-case';
+import { CreateAnimalUseCase } from '../../application/use-cases/animal/create-animal.use-case';
+import { UpdateAnimalUseCase } from '../../application/use-cases/animal/update-animal.use-case';
+import { GetAnimalUseCase } from '../../application/use-cases/animal/get-animal.use-case';
+import { GetAnimalsUseCase } from '../../application/use-cases/animal/get-animals.use-case';
+import { DeleteAnimalUseCase } from '../../application/use-cases/animal/delete-animal.use-case';
+import { AnimalType } from '../../core/domain/animal/value-objects/animal-type.enum';
 import { CreateAnimalDto } from '../dtos/requests/create-animal.dto';
 import { UpdateAnimalDto } from '../dtos/requests/update-animal.dto';
-import { UpdateAnimalUseCase } from 'src/application/use-cases/animal/update-animal.use-case';
-import { AnimalType } from 'src/core/domain/animal/value-objects/animal-type.enum';
+
 
 @ApiTags('Animals')
 @Controller('animals')

@@ -23,14 +23,15 @@ import { RequestAdoptionUseCase } from '../../application/use-cases/adoption/req
 
 import { AdoptionType } from '../../core/domain/adoption/value-objects/adoption-type.enum';
 import { AdoptionStatus } from '../../core/domain/adoption/value-objects/adoption-status.enum';
-import { ApproveAdoptionUseCase } from 'src/application/use-cases/adoption/approve-adoption.use-case';
-import { CancelAdoptionUseCase } from 'src/application/use-cases/adoption/cancel-adoption.use-case';
-import { GetAdoptionUseCase } from 'src/application/use-cases/adoption/get-adoption.use-case';
-import { RejectAdoptionUseCase } from 'src/application/use-cases/adoption/reject-adoption.use-case';
-import { GetAdoptionsUseCase } from 'src/application/use-cases/donation/get-adoptions.use-case';
+
 import { ApproveAdoptionDto } from '../dtos/requests/approve-adoption.dto';
 import { RejectAdoptionDto } from '../dtos/requests/reject-adoption.dto';
 import { RequestAdoptionDto } from '../dtos/requests/request-adoption.dto';
+import { ApproveAdoptionUseCase } from '../../application/use-cases/adoption/approve-adoption.use-case';
+import { RejectAdoptionUseCase } from '../../application/use-cases/adoption/reject-adoption.use-case';
+import { GetAdoptionUseCase } from '../../application/use-cases/adoption/get-adoption.use-case';
+import { GetAdoptionsUseCase } from '../../application/use-cases/donation/get-adoptions.use-case';
+import { CancelAdoptionUseCase } from '../../application/use-cases/adoption/cancel-adoption.use-case';
 
 @ApiTags('Adoptions')
 @Controller('adoptions')

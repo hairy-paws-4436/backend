@@ -8,7 +8,8 @@ import {
   IsUUID,
   ValidateIf
 } from 'class-validator';
-import { AdoptionType } from 'src/core/domain/adoption/value-objects/adoption-type.enum';
+import { AdoptionType } from '../../../core/domain/adoption/value-objects/adoption-type.enum';
+
 
 export class RequestAdoptionDto {
   @ApiProperty({

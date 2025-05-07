@@ -29,7 +29,8 @@ import { RolesGuard } from '../guards/roles.guard';
 import { LoginDto } from '../dtos/requests/login.dto';
 import { RegisterDto } from '../dtos/requests/register.dto';
 import { TwoFactorAuthDto } from '../dtos/requests/twofa.dto';
-import { GetTwoFactorStatusUseCase } from 'src/application/use-cases/auth/get-twofa-status.use-case';
+import { GetTwoFactorStatusUseCase } from '../../application/use-cases/auth/get-twofa-status.use-case';
+
 
 @ApiTags('Authentication')
 @Controller('auth')

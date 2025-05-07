@@ -6,7 +6,8 @@ import { OngEntity } from '../../infrastructure/database/mysql/entities/ong.enti
 import { OngService } from '../../application/services/ong.service';
 import { UserModule } from './user.module';
 import { AwsModule } from '../../infrastructure/services/aws/aws.module';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
+
 
 @Module({
   imports: [

@@ -11,9 +11,10 @@ import {
   } from 'typeorm';
   import { UserEntity } from './user.entity';
   import { OngEntity } from './ong.entity';
-import { DonationStatus } from 'src/core/domain/donation/value-objects/donation-status.enum';
-import { DonationType } from 'src/core/domain/donation/value-objects/donation-type.enum';
+import { DonationType } from '../../../../core/domain/donation/value-objects/donation-type.enum';
+import { DonationStatus } from '../../../../core/domain/donation/value-objects/donation-status.enum';
 import { DonationItemEntity } from './donation-items.entity';
+
 
   
   @Entity('donations')

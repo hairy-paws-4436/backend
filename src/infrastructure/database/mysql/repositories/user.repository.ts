@@ -6,7 +6,8 @@ import { UserEntity as UserDomainEntity } from '../../../../core/domain/user/use
 import { IUserRepository } from '../../../../core/interfaces/repositories/base-repository.interface';
 import { EntityNotFoundException } from '../../../../core/exceptions/domain.exception';
 import { UserRole } from '../../../../core/domain/user/value-objects/user-role.enum';
-import { UserStatus } from 'src/core/domain/user/value-objects/user-status';
+import { UserStatus } from '../../../../core/domain/user/value-objects/user-status';
+
 
 @Injectable()
 export class UserRepository implements IUserRepository {

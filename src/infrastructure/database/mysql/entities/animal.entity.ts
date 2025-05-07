@@ -13,9 +13,10 @@ import {
   import { AnimalGender } from '../../../../core/domain/animal/value-objects/animal-gender.enum';
 
   import { AnimalImageEntity } from './animal-image.entity';
-import { AnimalStatus } from 'src/core/domain/animal/value-objects/animal-status';
+
 import { AdoptionEntity } from './adoption.entity';
 import { UserEntity } from './user.entity';
+import { AnimalStatus } from '../../../../core/domain/animal/value-objects/animal-status';
   
   @Entity('animals')
   export class AnimalEntity {

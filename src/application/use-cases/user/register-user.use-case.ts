@@ -5,7 +5,8 @@ import { S3Service } from '../../../infrastructure/services/aws/s3.service';
 import { UserRole } from '../../../core/domain/user/value-objects/user-role.enum';
 import { BusinessRuleValidationException, DuplicateEntityException } from '../../../core/exceptions/domain.exception';
 import * as bcrypt from 'bcrypt';
-import { EmailService } from 'src/infrastructure/services/email/email.service';
+import { EmailService } from '../../../infrastructure/services/email/email.service';
+
 
 interface RegisterUserDto {
   email: string;
@@ -49,7 +50,7 @@ export class RegisterUserUseCase {
       let profileImageUrl: string | undefined;
       if (registerUserDto.profileImage) {
         profileImageUrl = await this.s3Service.uploadFile(
-          registerUserDto.profileImage.buffer,
+          registerUserDto.profileImage.buffer!,
           'profiles',
           registerUserDto.profileImage.originalname,
         );

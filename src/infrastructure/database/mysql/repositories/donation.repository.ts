@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { DonationEntity } from '../entities/donation.entity';
 import { IDonationRepository } from '../../../../core/interfaces/repositories/base-repository.interface';
 import { EntityNotFoundException } from '../../../../core/exceptions/domain.exception';
-import { DonationStatus } from 'src/core/domain/donation/value-objects/donation-status.enum';
+import { DonationStatus } from '../../../../core/domain/donation/value-objects/donation-status.enum';
+
 
 @Injectable()
 export class DonationRepository implements IDonationRepository {

@@ -6,10 +6,11 @@ import { DonationType } from '../../core/domain/donation/value-objects/donation-
 import { DonationStatus } from '../../core/domain/donation/value-objects/donation-status.enum';
 import { NotificationType } from '../../core/domain/notification/value-objects/notification-type.enum';
 import { BusinessRuleValidationException } from '../../core/exceptions/domain.exception';
-import { DonationItemRepository } from 'src/infrastructure/database/mysql/repositories/donation-item.repository';
-import { DonationRepository } from 'src/infrastructure/database/mysql/repositories/donation.repository';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
-import { CreateDonationDto } from 'src/presentation/dtos/requests/create-donation.dto';
+import { DonationRepository } from '../../infrastructure/database/mysql/repositories/donation.repository';
+import { DonationItemRepository } from '../../infrastructure/database/mysql/repositories/donation-item.repository';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
+import { CreateDonationDto } from '../../presentation/dtos/requests/create-donation.dto';
+
 
 @Injectable()
 export class DonationService {
@@ -41,7 +42,7 @@ export class DonationService {
     let receiptUrl: string | undefined;
     if (createDonationDto.receipt) {
       receiptUrl = await this.s3Service.uploadFile(
-        createDonationDto.receipt.buffer,
+        createDonationDto.receipt.buffer!,
         'donations',
         createDonationDto.receipt.originalname,
       );

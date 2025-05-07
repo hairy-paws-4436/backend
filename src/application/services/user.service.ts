@@ -52,7 +52,7 @@ export class UserService {
     let profileImageUrl: string | undefined;
     if (updateData.profileImage) {
       profileImageUrl = await this.s3Service.uploadFile(
-        updateData.profileImage.buffer,
+        updateData.profileImage.buffer!,
         'profiles',
         updateData.profileImage.originalname,
       );

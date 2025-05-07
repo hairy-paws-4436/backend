@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import { S3Service } from '../../infrastructure/services/aws/s3.service';
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
-import { EventRepository } from 'src/infrastructure/database/mysql/repositories/event.repository';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
+import { EventRepository } from '../../infrastructure/database/mysql/repositories/event.repository';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
+
 
 interface CreateEventDto {
   ongId: string;
@@ -44,7 +45,7 @@ export class EventService {
     let imageUrl: string | undefined;
     if (createEventDto.image) {
       imageUrl = await this.s3Service.uploadFile(
-        createEventDto.image.buffer,
+        createEventDto.image.buffer!,
         'events',
         createEventDto.image.originalname,
       );
@@ -90,7 +91,7 @@ export class EventService {
     
     if (updateEventDto.image) {
       const imageUrl = await this.s3Service.uploadFile(
-        updateEventDto.image.buffer,
+        updateEventDto.image.buffer!,
         'events',
         updateEventDto.image.originalname,
       );

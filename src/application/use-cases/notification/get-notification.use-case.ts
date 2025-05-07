@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotificationRepository } from 'src/infrastructure/database/mysql/repositories/notification.repository';
+import { NotificationRepository } from '../../../infrastructure/database/mysql/repositories/notification.repository';
+
 
 @Injectable()
 export class GetNotificationUseCase {

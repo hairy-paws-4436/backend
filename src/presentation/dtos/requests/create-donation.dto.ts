@@ -14,7 +14,8 @@ import {
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { DonationType } from 'src/core/domain/donation/value-objects/donation-type.enum';
+import { DonationType } from '../../../core/domain/donation/value-objects/donation-type.enum';
+
 
 class DonationItemDto {
   @ApiProperty({

@@ -12,8 +12,9 @@ import {
   Max
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { AnimalGender } from 'src/core/domain/animal/value-objects/animal-gender.enum';
-import { AnimalType } from 'src/core/domain/animal/value-objects/animal-type.enum';
+import { AnimalType } from '../../../core/domain/animal/value-objects/animal-type.enum';
+import { AnimalGender } from '../../../core/domain/animal/value-objects/animal-gender.enum';
+
 
 export class CreateAnimalDto {
   @ApiProperty({

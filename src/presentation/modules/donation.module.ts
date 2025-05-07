@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DonationController } from '../controllers/donation.controller';
 import { DonationEntity } from '../../infrastructure/database/mysql/entities/donation.entity';
-import { DonationService } from 'src/application/services/donation.service';
-import { DonationItemEntity } from 'src/infrastructure/database/mysql/entities/donation-items.entity';
-import { DonationItemRepository } from 'src/infrastructure/database/mysql/repositories/donation-item.repository';
-import { DonationRepository } from 'src/infrastructure/database/mysql/repositories/donation.repository';
-import { AwsModule } from 'src/infrastructure/services/aws/aws.module';
+
 import { NotificationModule } from './notification.module';
 import { OngModule } from './ong.module';
+import { DonationRepository } from '../../infrastructure/database/mysql/repositories/donation.repository';
+import { DonationService } from '../../application/services/donation.service';
+import { DonationItemRepository } from '../../infrastructure/database/mysql/repositories/donation-item.repository';
+import { AwsModule } from '../../infrastructure/services/aws/aws.module';
+import { DonationItemEntity } from '../../infrastructure/database/mysql/entities/donation-items.entity';
 
 
 @Module({

@@ -4,9 +4,8 @@ import { UserRepository } from '../../infrastructure/database/mysql/repositories
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
 import { NotificationType } from '../../core/domain/notification/value-objects/notification-type.enum';
 import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
-
-import { UserStatus } from 'src/core/domain/user/value-objects/user-status';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
+import { UserStatus } from '../../core/domain/user/value-objects/user-status';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
 
 
 @Injectable()

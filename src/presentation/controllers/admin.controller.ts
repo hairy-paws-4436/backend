@@ -18,9 +18,9 @@ import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
 import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
 import { UserRepository } from '../../infrastructure/database/mysql/repositories/user.repository';
-import { OngRepository } from 'src/infrastructure/database/mysql/repositories/ong.repository';
 import { VerifyOngDto } from '../dtos/requests/verify-ong.dto';
 import { VerifyUserDto } from '../dtos/requests/verify-user.dto';
+import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
 
 @ApiTags('Administration')
 @Controller('admin')

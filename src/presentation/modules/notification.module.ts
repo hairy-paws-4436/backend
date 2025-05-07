@@ -3,8 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationController } from '../controllers/notification.controller';
 import { NotificationEntity } from '../../infrastructure/database/mysql/entities/notification.entity';
 import { NotificationService } from '../../infrastructure/services/notification/notification.service';
-import { GetNotificationUseCase } from 'src/application/use-cases/notification/get-notification.use-case';
-import { NotificationRepository } from 'src/infrastructure/database/mysql/repositories/notification.repository';
+import { GetNotificationUseCase } from '../../application/use-cases/notification/get-notification.use-case';
+import { NotificationRepository } from '../../infrastructure/database/mysql/repositories/notification.repository';
+
 
 @Module({
   imports: [

@@ -24,9 +24,10 @@ import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
 import { OngService } from '../../application/services/ong.service';
 import { DonationType } from '../../core/domain/donation/value-objects/donation-type.enum';
 import { DonationStatus } from '../../core/domain/donation/value-objects/donation-status.enum';
-import { DonationService } from 'src/application/services/donation.service';
+
 import { ConfirmDonationDto } from '../dtos/requests/confirm-donation.dto';
 import { CreateDonationDto } from '../dtos/requests/create-donation.dto';
+import { DonationService } from '../../application/services/donation.service';
 
 @ApiTags('Donations')
 @Controller('donations')

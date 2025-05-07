@@ -24,9 +24,10 @@ import { User } from '../decorators/user.decorator';
 import { UserRole } from '../../core/domain/user/value-objects/user-role.enum';
 
 import { OngService } from '../../application/services/ong.service';
-import { EventService } from 'src/application/services/event.service';
+
 import { CreateEventDto } from '../dtos/requests/create-event.dto';
 import { UpdateEventDto } from '../dtos/requests/update-event.dto';
+import { EventService } from '../../application/services/event.service';
 
 @ApiTags('Events')
 @Controller('events')

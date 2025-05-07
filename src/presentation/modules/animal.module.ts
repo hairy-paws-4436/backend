@@ -6,11 +6,12 @@ import { AnimalImageEntity } from '../../infrastructure/database/mysql/entities/
 import { AnimalRepository } from '../../infrastructure/database/mysql/repositories/animal.repository';
 import { CreateAnimalUseCase } from '../../application/use-cases/animal/create-animal.use-case';
 import { AwsModule } from '../../infrastructure/services/aws/aws.module';
-import { DeleteAnimalUseCase } from 'src/application/use-cases/animal/delete-animal.use-case';
-import { GetAnimalUseCase } from 'src/application/use-cases/animal/get-animal.use-case';
-import { GetAnimalsUseCase } from 'src/application/use-cases/animal/get-animals.use-case';
-import { UpdateAnimalUseCase } from 'src/application/use-cases/animal/update-animal.use-case';
+
 import { AdoptionModule } from './adoption.module';
+import { UpdateAnimalUseCase } from '../../application/use-cases/animal/update-animal.use-case';
+import { DeleteAnimalUseCase } from '../../application/use-cases/animal/delete-animal.use-case';
+import { GetAnimalsUseCase } from '../../application/use-cases/animal/get-animals.use-case';
+import { GetAnimalUseCase } from '../../application/use-cases/animal/get-animal.use-case';
 
 @Module({
   imports: [

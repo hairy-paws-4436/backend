@@ -68,15 +68,20 @@ export class UpdateAnimalUseCase {
       }
 
       if (updateAnimalDto.images && updateAnimalDto.images.length > 0) {
-        const imageBuffers = updateAnimalDto.images.map(file => file.buffer);
-        const originalNames = updateAnimalDto.images.map(file => file.originalname);
+        const validImages = updateAnimalDto.images.filter(file => file.buffer);
+
+        const imageBuffers = validImages.map(file => file.buffer as Buffer);
+        const originalNames = validImages.map(file => file.originalname);
+
         const uploadedImageUrls = await this.s3Service.uploadMultipleFiles(
           imageBuffers,
           'animals',
           originalNames,
         );
+
         newImageUrls = [...newImageUrls, ...uploadedImageUrls];
       }
+
 
       animal.setImages(newImageUrls);
 

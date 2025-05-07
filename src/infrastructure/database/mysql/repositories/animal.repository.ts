@@ -8,7 +8,8 @@ import { IAnimalRepository } from '../../../../core/interfaces/repositories/base
 import { EntityNotFoundException } from '../../../../core/exceptions/domain.exception';
 import { AnimalType } from '../../../../core/domain/animal/value-objects/animal-type.enum';
 import { AnimalGender } from '../../../../core/domain/animal/value-objects/animal-gender.enum';
-import { AnimalStatus } from 'src/core/domain/animal/value-objects/animal-status';
+import { AnimalStatus } from '../../../../core/domain/animal/value-objects/animal-status';
+
 
 @Injectable()
 export class AnimalRepository implements IAnimalRepository {

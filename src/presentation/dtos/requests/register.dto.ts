@@ -9,7 +9,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { UserRole } from 'src/core/domain/user/value-objects/user-role.enum';
+import { UserRole } from '../../../core/domain/user/value-objects/user-role.enum';
+
 
 export class RegisterDto {
   @ApiProperty({

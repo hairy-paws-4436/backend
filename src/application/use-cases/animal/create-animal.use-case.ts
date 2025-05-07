@@ -32,14 +32,21 @@ export class CreateAnimalUseCase {
     try {
       let imageUrls: string[] = [];
       if (createAnimalDto.images && createAnimalDto.images.length > 0) {
-        const imageBuffers = createAnimalDto.images.map(file => file.buffer);
-        const originalNames = createAnimalDto.images.map(file => file.originalname);
+        const imageBuffers = createAnimalDto.images
+          .filter(file => file.buffer) // Filtrar para asegurar que file.buffer no sea undefined
+          .map(file => file.buffer as Buffer); // Asegurar TypeScript del tipo Buffer
+
+        const originalNames = createAnimalDto.images
+          .filter(file => file.buffer) // Filtrar también aquí
+          .map(file => file.originalname);
+
         imageUrls = await this.s3Service.uploadMultipleFiles(
           imageBuffers,
           'animals',
           originalNames,
         );
       }
+
 
       const animalEntity = new AnimalEntity(
         null,
