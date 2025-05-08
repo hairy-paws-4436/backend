@@ -1,11 +1,10 @@
-// test/unit/s3.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { S3Service } from '../../src/infrastructure/services/aws/s3.service';
+import { Logger } from '@nestjs/common';
 
-// Mock S3Client
 jest.mock('@aws-sdk/client-s3', () => {
   return {
     S3Client: jest.fn().mockImplementation(() => ({
@@ -20,6 +19,14 @@ describe('S3Service', () => {
   let service: S3Service;
   let configService: ConfigService;
   let s3Client: any;
+
+  beforeAll(() => {
+    jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,7 +80,7 @@ describe('S3Service', () => {
     it('should throw an error if file extension cannot be determined', async () => {
       const file = Buffer.from('test file content');
       const folder = 'test-folder';
-      const originalName = 'test-file'; // No extension
+      const originalName = '.';
 
       await expect(service.uploadFile(file, folder, originalName)).rejects.toThrow(
         'Could not determine file extension.',
@@ -126,7 +133,6 @@ describe('S3Service', () => {
       const folder = 'test-folder';
       const originalNames = ['file1.jpg', 'file2.png'];
 
-      // Mock uploadFile to return predictable URLs
       jest.spyOn(service, 'uploadFile').mockImplementation((file, folder, name) => {
         return Promise.resolve(`https://test-bucket.s3.us-east-1.amazonaws.com/${folder}/${name}`);
       });

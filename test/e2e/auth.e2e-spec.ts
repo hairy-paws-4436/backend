@@ -4,7 +4,8 @@ import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { UserRole } from '../../src/core/domain/user/value-objects/user-role.enum';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { testDatabaseConfig } from '../utils/test-utils';
+import { testDatabaseConfig } from '../test-database-config';
+
 
 describe('Authentication (e2e)', () => {
   let app: INestApplication;
@@ -34,7 +35,6 @@ describe('Authentication (e2e)', () => {
     await app.close();
   });
 
-  // Flujo completo de registro, login y acceso a recursos protegidos
   describe('Authentication flow', () => {
     it('should register a new user', () => {
       return request(app.getHttpServer())
@@ -54,8 +54,7 @@ describe('Authentication (e2e)', () => {
           expect(res.body.firstName).toBe('E2E');
           expect(res.body.lastName).toBe('Test');
           expect(res.body.role).toBe(UserRole.ADOPTER);
-          
-          // Guardar el ID para pruebas posteriores
+
           userId = res.body.id;
         });
     });
@@ -72,8 +71,7 @@ describe('Authentication (e2e)', () => {
           expect(res.body).toHaveProperty('access_token');
           expect(res.body).toHaveProperty('user');
           expect(res.body.user.email).toBe('e2e-test@example.com');
-          
-          // Guardar el token para pruebas posteriores
+
           authToken = res.body.access_token;
         });
     });
@@ -99,7 +97,6 @@ describe('Authentication (e2e)', () => {
     });
 
     it('should prevent access to role-specific endpoints with wrong role', () => {
-      // Un adoptante no debería poder acceder a endpoints de dueños de mascotas
       return request(app.getHttpServer())
         .get('/animals/owner')
         .set('Authorization', `Bearer ${authToken}`)
@@ -129,7 +126,7 @@ describe('Authentication (e2e)', () => {
         .post('/auth/register')
         .send({
           email: 'valid@example.com',
-          password: 'short', // Contraseña demasiado corta
+          password: 'short',
           firstName: 'Invalid',
           lastName: 'Password',
           phoneNumber: '987654324',
@@ -148,7 +145,7 @@ describe('Authentication (e2e)', () => {
           password: 'Password123!',
           firstName: 'Invalid',
           lastName: 'Phone',
-          phoneNumber: '12345678', // Número no peruano (debe empezar con 9)
+          phoneNumber: '12345678',
         })
         .expect(400)
         .expect((res) => {

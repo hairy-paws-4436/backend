@@ -6,9 +6,7 @@ import { UserRole } from '../../src/core/domain/user/value-objects/user-role.enu
 import { AnimalType } from '../../src/core/domain/animal/value-objects/animal-type.enum';
 import { AnimalGender } from '../../src/core/domain/animal/value-objects/animal-gender.enum';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { testDatabaseConfig } from '../utils/test-utils';
-import * as fs from 'fs';
-import * as path from 'path';
+import { testDatabaseConfig } from '../test-database-config';
 
 describe('Animals (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +16,6 @@ describe('Animals (e2e)', () => {
   let animalId: string;
 
   beforeAll(async () => {
-    // Crear aplicación de prueba
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(testDatabaseConfig),
@@ -36,8 +33,6 @@ describe('Animals (e2e)', () => {
     );
     await app.init();
 
-    // Registrar usuarios de prueba: owner, adopter y admin
-    // 1. Registrar owner
     await request(app.getHttpServer())
       .post('/auth/register')
       .send({
@@ -48,8 +43,7 @@ describe('Animals (e2e)', () => {
         phoneNumber: '987654321',
         role: UserRole.OWNER,
       });
-    
-    // 2. Registrar adopter
+
     await request(app.getHttpServer())
       .post('/auth/register')
       .send({
@@ -60,8 +54,7 @@ describe('Animals (e2e)', () => {
         phoneNumber: '987654322',
         role: UserRole.ADOPTER,
       });
-    
-    // 3. Registrar admin
+
     await request(app.getHttpServer())
       .post('/auth/register')
       .send({
@@ -72,9 +65,7 @@ describe('Animals (e2e)', () => {
         phoneNumber: '987654323',
         role: UserRole.ADMIN,
       });
-    
-    // Login y obtener tokens
-    // 1. Login como owner
+
     const ownerLoginResponse = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
@@ -82,8 +73,7 @@ describe('Animals (e2e)', () => {
         password: 'Password123!',
       });
     ownerToken = ownerLoginResponse.body.access_token;
-    
-    // 2. Login como adopter
+
     const adopterLoginResponse = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
@@ -91,8 +81,7 @@ describe('Animals (e2e)', () => {
         password: 'Password123!',
       });
     adopterToken = adopterLoginResponse.body.access_token;
-    
-    // 3. Login como admin
+
     const adminLoginResponse = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
@@ -108,7 +97,6 @@ describe('Animals (e2e)', () => {
 
   describe('Animal creation and management', () => {
     it('should create an animal as owner', async () => {
-      // Crear un animal
       const createResponse = await request(app.getHttpServer())
         .post('/animals')
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -121,11 +109,9 @@ describe('Animals (e2e)', () => {
         .field('vaccinated', 'true')
         .field('sterilized', 'false')
         .expect(201);
-      
-      // Guardar el ID para pruebas posteriores
+
       animalId = createResponse.body.id;
-      
-      // Verificar la respuesta
+
       expect(createResponse.body).toHaveProperty('id');
       expect(createResponse.body.name).toBe('Buddy');
       expect(createResponse.body.type).toBe(AnimalType.DOG);
@@ -140,8 +126,7 @@ describe('Animals (e2e)', () => {
       const getResponse = await request(app.getHttpServer())
         .get('/animals')
         .expect(200);
-      
-      // Verificar que hay al menos un animal (el que acabamos de crear)
+
       expect(Array.isArray(getResponse.body)).toBe(true);
       expect(getResponse.body.length).toBeGreaterThan(0);
       expect(getResponse.body.some(animal => animal.id === animalId)).toBe(true);
@@ -151,8 +136,7 @@ describe('Animals (e2e)', () => {
       const getResponse = await request(app.getHttpServer())
         .get(`/animals/${animalId}`)
         .expect(200);
-      
-      // Verificar detalles del animal
+
       expect(getResponse.body.id).toBe(animalId);
       expect(getResponse.body.name).toBe('Buddy');
       expect(getResponse.body.type).toBe(AnimalType.DOG);
@@ -164,8 +148,7 @@ describe('Animals (e2e)', () => {
         .get('/animals/owner')
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-      
-      // Verificar que el dueño puede ver su animal
+
       expect(Array.isArray(getResponse.body)).toBe(true);
       expect(getResponse.body.length).toBeGreaterThan(0);
       expect(getResponse.body.some(animal => animal.id === animalId)).toBe(true);
@@ -187,8 +170,7 @@ describe('Animals (e2e)', () => {
         .field('vaccinated', 'true')
         .field('sterilized', 'true')
         .expect(200);
-      
-      // Verificar que se actualizó correctamente
+
       expect(updateResponse.body.id).toBe(animalId);
       expect(updateResponse.body.name).toBe('Max');
       expect(updateResponse.body.description).toBe('Updated description about Max the beagle.');
@@ -214,8 +196,7 @@ describe('Animals (e2e)', () => {
           type: 'ADOPTION',
         })
         .expect(201);
-      
-      // Verificar la respuesta
+
       expect(adoptionResponse.body).toHaveProperty('id');
       expect(adoptionResponse.body.animalId).toBe(animalId);
       expect(adoptionResponse.body.type).toBe('ADOPTION');
@@ -227,8 +208,7 @@ describe('Animals (e2e)', () => {
         .get('/adoptions')
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-      
-      // Verificar que hay solicitudes y pertenecen al animal creado
+
       expect(Array.isArray(getResponse.body)).toBe(true);
       expect(getResponse.body.length).toBeGreaterThan(0);
       expect(getResponse.body.some(adoption => adoption.animalId === animalId)).toBe(true);
@@ -239,8 +219,7 @@ describe('Animals (e2e)', () => {
         .get('/adoptions')
         .set('Authorization', `Bearer ${adopterToken}`)
         .expect(200);
-      
-      // Verificar que hay solicitudes y pertenecen al animal correcto
+
       expect(Array.isArray(getResponse.body)).toBe(true);
       expect(getResponse.body.length).toBeGreaterThan(0);
       expect(getResponse.body.some(adoption => adoption.animalId === animalId)).toBe(true);
@@ -249,7 +228,6 @@ describe('Animals (e2e)', () => {
 
   describe('Animal deletion', () => {
     it('should allow owner to delete their animal', async () => {
-      // Primero crear un nuevo animal para eliminar
       const createResponse = await request(app.getHttpServer())
         .post('/animals')
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -264,14 +242,12 @@ describe('Animals (e2e)', () => {
         .expect(201);
       
       const animalToDeleteId = createResponse.body.id;
-      
-      // Ahora intentar eliminar el animal
+
       await request(app.getHttpServer())
         .delete(`/animals/${animalToDeleteId}`)
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-      
-      // Verificar que el animal ya no existe
+
       await request(app.getHttpServer())
         .get(`/animals/${animalToDeleteId}`)
         .expect(404);
@@ -289,8 +265,7 @@ describe('Animals (e2e)', () => {
         .delete(`/animals/${animalId}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
-      
-      // Verificar que el animal ya no existe
+
       await request(app.getHttpServer())
         .get(`/animals/${animalId}`)
         .expect(404);

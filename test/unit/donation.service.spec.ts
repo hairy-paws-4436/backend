@@ -1,4 +1,3 @@
-// test/unit/donation.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { DonationService } from '../../src/application/services/donation.service';
 import { DonationStatus } from '../../src/core/domain/donation/value-objects/donation-status.enum';
@@ -22,7 +21,6 @@ describe('DonationService', () => {
   let notificationService: NotificationService;
   let ongRepository: OngRepository;
 
-  // Usar double casting para el mock de DonationEntity
   const mockDonation = {
     id: 'donation1',
     donorId: 'donor1',

@@ -1,4 +1,3 @@
-// test/integration/adoption.integration.spec.ts
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TestSetup } from './setup';
@@ -37,7 +36,6 @@ describe('Adoption Integration Tests', () => {
     await testSetup.clearDatabase();
   });
 
-  // Helper function to create a user and get a token
   async function createUserAndGetToken(userData: any) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await userRepository.create({
@@ -62,7 +60,6 @@ describe('Adoption Integration Tests', () => {
 
   describe('Adoption Flow', () => {
     it('should allow users to request, approve, and complete an adoption', async () => {
-      // 1. Create an owner and an adopter
       const ownerData = {
         email: 'owner@example.com',
         password: 'Password123!',
@@ -88,7 +85,6 @@ describe('Adoption Integration Tests', () => {
       const { user: owner, token: ownerToken } = await createUserAndGetToken(ownerData);
       const { user: adopter, token: adopterToken } = await createUserAndGetToken(adopterData);
 
-      // 2. Create an animal owned by the owner
       const animalData = {
         name: 'Fluffy',
         type: AnimalType.DOG,
@@ -113,7 +109,6 @@ describe('Adoption Integration Tests', () => {
 
       const animalId = createAnimalResponse.body.id;
 
-      // 3. Request adoption as adopter
       const adoptionRequestData = {
         animalId,
         type: AdoptionType.ADOPTION,
@@ -129,7 +124,6 @@ describe('Adoption Integration Tests', () => {
       const adoptionId = adoptionRequestResponse.body.id;
       expect(adoptionRequestResponse.body.status).toBe(AdoptionStatus.PENDING);
 
-      // 4. Get adoption requests as owner
       const adoptionRequestsResponse = await request(testSetup.getHttpServer())
         .get('/adoptions/received')
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -140,7 +134,6 @@ describe('Adoption Integration Tests', () => {
       expect(adoptionRequestsResponse.body[0].animalId).toBe(animalId);
       expect(adoptionRequestsResponse.body[0].adopterInfo.email).toBe(adopterData.email);
 
-      // 5. Approve adoption request as owner
       const approveResponse = await request(testSetup.getHttpServer())
         .post(`/adoptions/${adoptionId}/approve`)
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -149,14 +142,12 @@ describe('Adoption Integration Tests', () => {
 
       expect(approveResponse.body.status).toBe(AdoptionStatus.APPROVED);
 
-      // 6. Check that the animal is now adopted
       const getAnimalResponse = await request(testSetup.getHttpServer())
         .get(`/animals/${animalId}`)
         .expect(200);
 
       expect(getAnimalResponse.body.adoptionStatus).toBe('ADOPTED');
 
-      // 7. Get adoption details as adopter
       const getAdoptionResponse = await request(testSetup.getHttpServer())
         .get(`/adoptions/${adoptionId}`)
         .set('Authorization', `Bearer ${adopterToken}`)
@@ -167,7 +158,6 @@ describe('Adoption Integration Tests', () => {
     });
 
     it('should handle visit requests', async () => {
-      // 1. Create an owner and an adopter
       const { user: owner, token: ownerToken } = await createUserAndGetToken({
         email: 'owner@example.com',
         password: 'Password123!',
@@ -190,7 +180,6 @@ describe('Adoption Integration Tests', () => {
         dni: '12345678'
       });
 
-      // 2. Create an animal owned by the owner
       const createAnimalResponse = await request(testSetup.getHttpServer())
         .post('/animals')
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -212,7 +201,6 @@ describe('Adoption Integration Tests', () => {
 
       const animalId = createAnimalResponse.body.id;
 
-      // 3. Request a visit as adopter
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -233,7 +221,6 @@ describe('Adoption Integration Tests', () => {
       expect(visitRequestResponse.body.status).toBe(AdoptionStatus.PENDING);
       expect(visitRequestResponse.body.visitDate).toBeDefined();
 
-      // 4. Approve visit request as owner
       const approveResponse = await request(testSetup.getHttpServer())
         .post(`/adoptions/${visitId}/approve`)
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -242,7 +229,6 @@ describe('Adoption Integration Tests', () => {
 
       expect(approveResponse.body.status).toBe(AdoptionStatus.APPROVED);
 
-      // 5. Check that the animal is still available (not adopted)
       const getAnimalResponse = await request(testSetup.getHttpServer())
         .get(`/animals/${animalId}`)
         .expect(200);

@@ -1,4 +1,3 @@
-// test/unit/ong.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { OngService } from '../../src/application/services/ong.service';
 import { OngRepository } from '../../src/infrastructure/database/mysql/repositories/ong.repository';
@@ -14,7 +13,6 @@ describe('OngService', () => {
   let userRepository: UserRepository;
   let s3Service: S3Service;
 
-  // Creando un mock con type assertion a UserEntity
   const mockUser = {
     getId: jest.fn().mockReturnValue('user1'),
     getEmail: jest.fn().mockReturnValue('user@example.com'),
@@ -172,7 +170,6 @@ describe('OngService', () => {
     });
 
     it('should not change role if user is already an ONG', async () => {
-      // Crear un nuevo mock para un usuario que ya es ONG
       const ongUser = {
         getId: jest.fn().mockReturnValue('user1'),
         getEmail: jest.fn().mockReturnValue('user@example.com'),

@@ -1,4 +1,3 @@
-// test/unit/auth.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,7 +17,6 @@ describe('AuthService', () => {
   let jwtService: JwtService;
   let twoFactorAuthService: TwoFactorAuthService;
 
-  // Mock con las funciones necesarias y casting a UserEntity
   const mockUser = {
     getId: jest.fn().mockReturnValue('1'),
     getEmail: jest.fn().mockReturnValue('test@example.com'),
@@ -85,7 +83,6 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should validate user with correct credentials', async () => {
-      // Mock bcrypt.compare to return true
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       mockOrmUser.comparePassword.mockResolvedValue(true);
 
@@ -95,7 +92,6 @@ describe('AuthService', () => {
     });
 
     it('should throw an error if user is inactive', async () => {
-      // Crear un usuario inactivo para este test
       const inactiveUser = {
         ...mockUser,
         isActive: jest.fn().mockReturnValue(false),
@@ -109,7 +105,6 @@ describe('AuthService', () => {
     });
 
     it('should throw an error with incorrect password', async () => {
-      // Mock bcrypt.compare to return false
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.validateUser('test@example.com', 'wrongpassword')).rejects.toThrow(
@@ -141,7 +136,6 @@ describe('AuthService', () => {
 
   describe('enableTwoFactorAuth', () => {
     it('should enable two-factor authentication for a user', async () => {
-      // Mock user that doesn't have 2FA enabled
       const userWithout2FA = {
         ...mockUser,
         isTwoFactorEnabled: jest.fn().mockReturnValue(false),
@@ -160,7 +154,6 @@ describe('AuthService', () => {
     });
 
     it('should throw an error if user already has 2FA enabled', async () => {
-      // Mock user that has 2FA enabled
       const userWith2FA = {
         ...mockUser,
         isTwoFactorEnabled: jest.fn().mockReturnValue(true),
@@ -174,7 +167,6 @@ describe('AuthService', () => {
 
   describe('verifyTwoFactorAuthToken', () => {
     it('should verify a valid token', async () => {
-      // Mock user with a 2FA secret
       const userWith2FA = {
         ...mockUser,
         getTwoFactorSecret: jest.fn().mockReturnValue('secret'),
@@ -193,7 +185,6 @@ describe('AuthService', () => {
     });
 
     it('should not enable 2FA if user already has it enabled', async () => {
-      // Mock user with 2FA already enabled
       const userWith2FA = {
         ...mockUser,
         getTwoFactorSecret: jest.fn().mockReturnValue('secret'),
@@ -212,7 +203,6 @@ describe('AuthService', () => {
     });
 
     it('should return false for an invalid token', async () => {
-      // Mock user with a 2FA secret
       const userWith2FA = {
         ...mockUser,
         getTwoFactorSecret: jest.fn().mockReturnValue('secret'),
@@ -227,7 +217,6 @@ describe('AuthService', () => {
     });
 
     it('should throw an error if user does not have 2FA setup', async () => {
-      // Mock user without a 2FA secret
       const userWithout2FA = {
         ...mockUser,
         getTwoFactorSecret: jest.fn().mockReturnValue(null),
@@ -241,7 +230,6 @@ describe('AuthService', () => {
 
   describe('disableTwoFactorAuth', () => {
     it('should disable two-factor authentication for a user', async () => {
-      // Mock user with 2FA enabled
       const userWith2FA = {
         ...mockUser,
         disableTwoFactor: jest.fn(),

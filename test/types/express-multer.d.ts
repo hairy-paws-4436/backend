@@ -1,4 +1,3 @@
-// En un archivo separado como test/types/express-multer.d.ts
 declare namespace Express {
   namespace Multer {
     interface File {
@@ -11,7 +10,7 @@ declare namespace Express {
       filename?: string;
       path?: string;
       buffer?: Buffer;
-      stream?: any; // Cambiamos el tipo para permitir null
+      stream?: any;
     }
   }
 }

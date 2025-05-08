@@ -1,4 +1,3 @@
-// test/unit/admin.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { AdminService } from '../../src/application/services/admin.service';
 import { UserRepository } from '../../src/infrastructure/database/mysql/repositories/user.repository';
@@ -119,7 +118,6 @@ describe('AdminService', () => {
 
   describe('verifyUser', () => {
     it('should verify a user', async () => {
-      // Prepare a spy for the verify method
       const verifySpy = jest.spyOn(mockUser, 'verify');
 
       await service.verifyUser('1', 'Verification note');
@@ -138,7 +136,6 @@ describe('AdminService', () => {
 
   describe('verifyOng', () => {
     it('should verify an ONG', async () => {
-      // Prepare a spy for the verify method
       const verifySpy = jest.spyOn(mockUser, 'verify');
 
       await service.verifyOng('1', 'Verification note');
@@ -159,7 +156,6 @@ describe('AdminService', () => {
 
   describe('changeUserStatus', () => {
     it('should activate a user', async () => {
-      // Prepare spies for the activate method
       const activateSpy = jest.spyOn(mockUser, 'activate');
 
       await service.changeUserStatus('1', UserStatus.ACTIVE);
@@ -170,7 +166,6 @@ describe('AdminService', () => {
     });
 
     it('should deactivate a user', async () => {
-      // Prepare spies for the deactivate method
       const deactivateSpy = jest.spyOn(mockUser, 'deactivate');
 
       await service.changeUserStatus('1', UserStatus.INACTIVE);

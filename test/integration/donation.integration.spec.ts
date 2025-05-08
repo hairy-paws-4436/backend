@@ -1,4 +1,3 @@
-// test/integration/donation.integration.spec.ts
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TestSetup } from './setup';
@@ -40,7 +39,6 @@ describe('Donation Integration Tests', () => {
     await testSetup.clearDatabase();
   });
 
-  // Helper function to create a user and get a token
   async function createUserAndGetToken(userData: any) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await userRepository.create({
@@ -63,7 +61,6 @@ describe('Donation Integration Tests', () => {
     };
   }
 
-  // Helper to create a test file
   function createTestFile(filename: string, content: string = 'test content') {
     const testFilePath = path.join(__dirname, '..', 'temp', filename);
     const dirPath = path.join(__dirname, '..', 'temp');
@@ -78,7 +75,6 @@ describe('Donation Integration Tests', () => {
 
   describe('Donation Flow', () => {
     it('should allow users to make a money donation and ONG confirm it', async () => {
-      // 1. Create a donor user and an ONG user
       const donorData = {
         email: 'donor@example.com',
         password: 'Password123!',
@@ -104,7 +100,6 @@ describe('Donation Integration Tests', () => {
       const { user: donor, token: donorToken } = await createUserAndGetToken(donorData);
       const { user: ongUser, token: ongToken } = await createUserAndGetToken(ongUserData);
 
-      // 2. Create an ONG profile
       const ongData = {
         name: 'Test ONG',
         ruc: '12345678901',
@@ -114,11 +109,9 @@ describe('Donation Integration Tests', () => {
         email: 'ong@example.com',
       };
 
-      // 2.1. Create test files for logo and legal documents
       const logoPath = createTestFile('logo.jpg');
       const docPath = createTestFile('legal_doc.pdf');
 
-      // 2.2. Submit the ONG creation request
       const createOngResponse = await request(testSetup.getHttpServer())
         .post('/ongs')
         .set('Authorization', `Bearer ${ongToken}`)
@@ -134,7 +127,6 @@ describe('Donation Integration Tests', () => {
 
       const ongId = createOngResponse.body.id;
 
-      // 3. Make a money donation as donor
       const receiptPath = createTestFile('receipt.jpg');
 
       const donationResponse = await request(testSetup.getHttpServer())
@@ -152,7 +144,6 @@ describe('Donation Integration Tests', () => {
       expect(donationResponse.body.status).toBe(DonationStatus.PENDING);
       expect(donationResponse.body.amount).toBe(100);
 
-      // 4. Get donation as ONG admin
       const ongDonationsResponse = await request(testSetup.getHttpServer())
         .get('/donations/ong')
         .set('Authorization', `Bearer ${ongToken}`)
@@ -162,7 +153,6 @@ describe('Donation Integration Tests', () => {
       expect(ongDonationsResponse.body[0].id).toBe(donationId);
       expect(ongDonationsResponse.body[0].amount).toBe(100);
 
-      // 5. Confirm donation as ONG admin
       const confirmResponse = await request(testSetup.getHttpServer())
         .post(`/donations/${donationId}/confirm`)
         .set('Authorization', `Bearer ${ongToken}`)
@@ -171,7 +161,6 @@ describe('Donation Integration Tests', () => {
 
       expect(confirmResponse.body.status).toBe(DonationStatus.CONFIRMED);
 
-      // 6. Get donation details as donor
       const getDonationResponse = await request(testSetup.getHttpServer())
         .get(`/donations/${donationId}`)
         .set('Authorization', `Bearer ${donorToken}`)
@@ -180,14 +169,12 @@ describe('Donation Integration Tests', () => {
       expect(getDonationResponse.body.status).toBe(DonationStatus.CONFIRMED);
       expect(getDonationResponse.body.notes).toContain('Thank you');
 
-      // Clean up test files
       fs.unlinkSync(logoPath);
       fs.unlinkSync(docPath);
       fs.unlinkSync(receiptPath);
     });
 
     it('should allow users to make an items donation', async () => {
-      // 1. Create users and ONG (simplified for brevity)
       const { user: donor, token: donorToken } = await createUserAndGetToken({
         email: 'donor@example.com',
         password: 'Password123!',
@@ -210,7 +197,6 @@ describe('Donation Integration Tests', () => {
         dni: '12345678'
       });
 
-      // Set up ONG
       const logoPath = createTestFile('logo.jpg');
       const docPath = createTestFile('legal_doc.pdf');
 
@@ -229,7 +215,6 @@ describe('Donation Integration Tests', () => {
 
       const ongId = createOngResponse.body.id;
 
-      // 2. Make an items donation as donor
       const receiptPath = createTestFile('receipt.jpg');
       const items = [
         { name: 'Dog Food', quantity: 5, description: 'Bags of premium dog food' },
@@ -250,7 +235,6 @@ describe('Donation Integration Tests', () => {
       expect(donationResponse.body.status).toBe(DonationStatus.PENDING);
       expect(donationResponse.body.type).toBe(DonationType.ITEMS);
 
-      // 3. Check donation items
       const donationDetailsResponse = await request(testSetup.getHttpServer())
         .get(`/donations/${donationId}`)
         .set('Authorization', `Bearer ${ongToken}`)
@@ -261,7 +245,6 @@ describe('Donation Integration Tests', () => {
       expect(donationDetailsResponse.body.items[0].name).toBe('Dog Food');
       expect(donationDetailsResponse.body.items[1].name).toBe('Cat Toys');
 
-      // Clean up test files
       fs.unlinkSync(logoPath);
       fs.unlinkSync(docPath);
       fs.unlinkSync(receiptPath);

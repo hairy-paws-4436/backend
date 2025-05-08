@@ -1,4 +1,3 @@
-// test/integration/auth.integration.spec.ts
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TestSetup } from './setup';
@@ -29,7 +28,6 @@ describe('Auth Integration Tests', () => {
 
   describe('Authentication Flow', () => {
     it('should register, login, and access protected resources', async () => {
-      // Test user data
       const userData = {
         email: 'test@example.com',
         password: 'Password123!',
@@ -40,7 +38,6 @@ describe('Auth Integration Tests', () => {
         dni: '12345678'
       };
 
-      // 1. Register a new user
       const registerResponse = await request(testSetup.getHttpServer())
         .post('/auth/register')
         .send(userData)
@@ -50,7 +47,6 @@ describe('Auth Integration Tests', () => {
       expect(registerResponse.body.email).toBe(userData.email);
       expect(registerResponse.body.role).toBe(UserRole.ADOPTER);
 
-      // 2. Login with the registered user
       const loginResponse = await request(testSetup.getHttpServer())
         .post('/auth/login')
         .send({
@@ -62,7 +58,6 @@ describe('Auth Integration Tests', () => {
       expect(loginResponse.body).toHaveProperty('access_token');
       const token = loginResponse.body.access_token;
 
-      // 3. Access a protected resource
       const profileResponse = await request(testSetup.getHttpServer())
         .get('/users/profile')
         .set('Authorization', `Bearer ${token}`)
@@ -72,14 +67,12 @@ describe('Auth Integration Tests', () => {
       expect(profileResponse.body.firstName).toBe(userData.firstName);
       expect(profileResponse.body.lastName).toBe(userData.lastName);
 
-      // 4. Test unauthorized access
       await request(testSetup.getHttpServer())
         .get('/users/profile')
         .expect(401);
     });
 
     it('should handle invalid login credentials', async () => {
-      // Create a user in the database
       const hashedPassword = await bcrypt.hash('Password123!', 10);
       await userRepository.create({
         email: 'test@example.com',
@@ -94,7 +87,6 @@ describe('Auth Integration Tests', () => {
         identityDocument: '12345678',
       } as any);
 
-      // Try to login with incorrect password
       await request(testSetup.getHttpServer())
         .post('/auth/login')
         .send({
@@ -103,7 +95,6 @@ describe('Auth Integration Tests', () => {
         })
         .expect(401);
 
-      // Try to login with non-existent email
       await request(testSetup.getHttpServer())
         .post('/auth/login')
         .send({

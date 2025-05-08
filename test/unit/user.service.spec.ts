@@ -1,6 +1,4 @@
-// test/unit/user.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
-
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../../src/core/domain/user/value-objects/user-role.enum';
 import { UserEntity } from '../../src/core/domain/user/user.entity';
@@ -88,7 +86,6 @@ describe('UserService', () => {
 
   describe('updateProfile', () => {
     it('should update user profile', async () => {
-      // Prepare spies for the updateProfile method
       const updateProfileSpy = jest.spyOn(mockUser, 'updateProfile');
       const updateProfileImageSpy = jest.spyOn(mockUser, 'updateProfileImage');
 
@@ -122,7 +119,7 @@ describe('UserService', () => {
 
     it('should throw error if phone number is already in use', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue({
-        getId: () => '2', // Different user ID
+        getId: () => '2',
       } as any);
 
       const updateData = {
@@ -136,7 +133,7 @@ describe('UserService', () => {
 
     it('should not throw error if phone number belongs to same user', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue({
-        getId: () => '1', // Same user ID
+        getId: () => '1',
       } as any);
 
       const updateData = {
@@ -149,12 +146,9 @@ describe('UserService', () => {
 
   describe('changePassword', () => {
     it('should change user password', async () => {
-      // Mock bcrypt.compare to return true
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      // Mock bcrypt.hash to return a new hashed password
       (bcrypt.hash as jest.Mock).mockResolvedValue('newHashedPassword');
 
-      // Prepare a spy for the updatePassword method
       const updatePasswordSpy = jest.spyOn(mockUser, 'updatePassword');
 
       const changePasswordDto = {
@@ -172,7 +166,6 @@ describe('UserService', () => {
     });
 
     it('should throw error with incorrect current password', async () => {
-      // Mock bcrypt.compare to return false
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       const changePasswordDto = {
@@ -188,7 +181,6 @@ describe('UserService', () => {
 
   describe('deactivateAccount', () => {
     it('should deactivate a user account', async () => {
-      // Prepare a spy for the deactivate method
       const deactivateSpy = jest.spyOn(mockUser, 'deactivate');
 
       await service.deactivateAccount('1');
