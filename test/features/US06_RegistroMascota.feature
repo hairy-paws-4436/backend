@@ -5,8 +5,7 @@ Feature: US06 Registro de mascota
 
   Scenario Outline: Registrar una nueva mascota
     Given el <usuario> desea registrar una mascota para adopción
-    And se encuentra en el apartado de "Mis Mascotas"
-    When haga clic en el botón "Agregar mascota"
+    And se encuentra en el apartado de "Registrar Mascotas"
     And ingresa la información básica <nombre>, <tipo>, <raza>, <edad>, <género>, <descripción>
     And sube <numero_fotos> fotos de la mascota
     And haga clic en "Publicar"
@@ -20,8 +19,7 @@ Feature: US06 Registro de mascota
 
   Scenario: Fallar en el registro de mascota
     Given el "Dueño" desea registrar una mascota para adopción
-    And se encuentra en el apartado de "Mis Mascotas"
-    When haga clic en el botón "Agregar mascota"
+    And se encuentra en el apartado de "Registrar Mascotas"
     And intenta ingresar la información del animal pero no completa todos los campos obligatorios
     And haga clic en "Publicar"
     Then el sistema le mostrará un <mensaje de error>

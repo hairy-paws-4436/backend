@@ -7,7 +7,7 @@ Feature: US20 Registro de donación
     Given el usuario "Donante" está en el perfil de la ONG <ong>
     When selecciona la opción "Realizar Donación"
     And selecciona tipo de donación "Monetaria"
-    And ingresa el monto <monto>
+    And ingresa el monto <monto> y <Transaction ID>
     And sube comprobante de transferencia
     And ingresa <notas>
     And haga clic en "Confirmar Donación"
@@ -15,9 +15,9 @@ Feature: US20 Registro de donación
     And enviará una notificación a la ONG
 
     Examples:
-      | ong       | monto | notas                        |
-      | "Patitas" | "100" | "Para alimento de cachorros" |
-      | "Huellas" | "50"  | "Donación mensual"           |
+      | ong       | monto | monto | notas                        |
+      | "Patitas" | "100" |   1231   |"Para alimento de cachorros" |
+      | "Huellas" | "50"  |   4141   |"Donación mensual"           |
 
   Scenario Outline: Registrar donación de productos
     Given el usuario "Donante" está en el perfil de la ONG <ong>
