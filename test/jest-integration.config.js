@@ -1,6 +1,6 @@
 module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
-  rootDir: '<rootDir>',
+  rootDir: __dirname,
   testMatch: ['**/test/integration/**/*.spec.ts'],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
@@ -11,5 +11,7 @@ module.exports = {
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
   },
-  testTimeout: 30000
+  testTimeout: 30000,
+  forceExit: true,
+  detectOpenHandles: true
 };
