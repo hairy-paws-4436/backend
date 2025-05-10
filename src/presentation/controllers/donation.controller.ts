@@ -40,7 +40,7 @@ export class DonationController {
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('receipt', {
+  @UseInterceptors(FileInterceptor('receiptUrl', {
       limits: {
           fileSize: 5 * 1024 * 1024,
       },
@@ -59,15 +59,13 @@ export class DonationController {
   })
   async createDonation(
       @Body() createDonationDto: CreateDonationDto,
-      @UploadedFile() receipt: Express.Multer.File,
       @User() user,
   ) {
       const donation = await this.donationService.createDonation({
           ...createDonationDto,
           donorId: user.id,
-          receipt,
       });
-      
+
       return donation;
   }
 

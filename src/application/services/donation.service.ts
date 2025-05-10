@@ -11,13 +11,11 @@ import { DonationItemRepository } from '../../infrastructure/database/mysql/repo
 import { OngRepository } from '../../infrastructure/database/mysql/repositories/ong.repository';
 import { CreateDonationDto } from '../../presentation/dtos/requests/create-donation.dto';
 
-
 @Injectable()
 export class DonationService {
   constructor(
     private readonly donationRepository: DonationRepository,
     private readonly donationItemRepository: DonationItemRepository,
-    private readonly s3Service: S3Service,
     private readonly notificationService: NotificationService,
     private readonly ongRepository: OngRepository,
   ) {}
@@ -39,15 +37,6 @@ export class DonationService {
       }
     }
 
-    let receiptUrl: string | undefined;
-    if (createDonationDto.receipt) {
-      receiptUrl = await this.s3Service.uploadFile(
-        createDonationDto.receipt.buffer!,
-        'donations',
-        createDonationDto.receipt.originalname,
-      );
-    }
-
     const donationData = {
       donorId: createDonationDto.donorId,
       ongId: createDonationDto.ongId,
@@ -56,7 +45,6 @@ export class DonationService {
       amount: createDonationDto.amount,
       transactionId: createDonationDto.transactionId,
       notes: createDonationDto.notes,
-      receiptUrl,
     };
 
     const donation = await this.donationRepository.create(donationData);

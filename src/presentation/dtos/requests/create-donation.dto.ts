@@ -107,13 +107,4 @@ export class CreateDonationDto {
   @ValidateNested({ each: true })
   @Type(() => DonationItemDto)
   items?: DonationItemDto[];
-
-  @ApiProperty({
-    description: 'Receipt file (optional)',
-    type: 'string',
-    format: 'binary',
-    required: false
-  })
-
-  receipt: Express.Multer.File;
 }
