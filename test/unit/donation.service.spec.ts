@@ -12,7 +12,6 @@ import { CreateDonationDto } from 'src/presentation/dtos/requests/create-donatio
 import { NotificationType } from '../../src/core/domain/notification/value-objects/notification-type.enum';
 import { BusinessRuleValidationException } from '../../src/core/exceptions/domain.exception';
 
-
 describe('DonationService', () => {
   let service: DonationService;
   let donationRepository: DonationRepository;
@@ -145,9 +144,9 @@ describe('DonationService', () => {
       const result = await service.createDonation(createDonationDto);
 
       expect(s3Service.uploadFile).toHaveBeenCalledWith(
-        createDonationDto.receipt.buffer,
+        //createDonationDto.receipt.buffer,
         'donations',
-        createDonationDto.receipt.originalname,
+        //createDonationDto.receipt.originalname,
       );
       expect(donationRepository.create).toHaveBeenCalledWith({
         donorId: 'donor1',

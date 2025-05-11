@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { TestSetup } from './setup';
+import { TestSetup } from '../utils/setup';
 import { UserRole } from '../../src/core/domain/user/value-objects/user-role.enum';
 import { UserStatus } from '../../src/core/domain/user/value-objects/user-status';
 import * as bcrypt from 'bcrypt';

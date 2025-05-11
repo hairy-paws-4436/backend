@@ -1,4 +1,4 @@
-/*declare namespace Express {
+declare namespace Express {
   namespace Multer {
     interface File {
       fieldname: string;
@@ -13,4 +13,4 @@
       stream: any;
     }
   }
-}*/
+}

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { TestSetup } from './setup';
+import { TestSetup } from '../utils/setup';
 import { UserRepository } from '../../src/infrastructure/database/mysql/repositories/user.repository';
 import { OngRepository } from '../../src/infrastructure/database/mysql/repositories/ong.repository';
 import { EventRepository } from '../../src/infrastructure/database/mysql/repositories/event.repository';

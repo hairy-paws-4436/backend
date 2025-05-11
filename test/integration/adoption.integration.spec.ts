@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { TestSetup } from './setup';
+import { TestSetup } from '../utils/setup';
 import { UserRepository } from '../../src/infrastructure/database/mysql/repositories/user.repository';
 import { AnimalRepository } from '../../src/infrastructure/database/mysql/repositories/animal.repository';
 import { AdoptionRepository } from '../../src/infrastructure/database/mysql/repositories/adoption.repository';
@@ -11,6 +11,8 @@ import { AnimalGender } from '../../src/core/domain/animal/value-objects/animal-
 import { AdoptionType } from '../../src/core/domain/adoption/value-objects/adoption-type.enum';
 import { AdoptionStatus } from '../../src/core/domain/adoption/value-objects/adoption-status.enum';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from '../../src/core/domain/user/user.entity';
+
 
 describe('Adoption Integration Tests', () => {
   let app: INestApplication;
@@ -38,12 +40,24 @@ describe('Adoption Integration Tests', () => {
 
   async function createUserAndGetToken(userData: any) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const user = await userRepository.create({
-      ...userData,
-      password: hashedPassword,
-      status: UserStatus.ACTIVE,
-      verified: true,
-    });
+    const userEntity = new UserEntity(
+      undefined!,
+      userData.email,
+      hashedPassword,
+      userData.firstName,
+      userData.lastName,
+      userData.phone || userData.phoneNumber,
+      userData.role,
+      UserStatus.ACTIVE,
+      true,
+      userData.address,
+      undefined,
+      undefined,
+      false,
+      userData.dni || userData.identityDocument
+    );
+
+    const user = await userRepository.create(userEntity);
 
     const loginResponse = await request(testSetup.getHttpServer())
       .post('/auth/login')
@@ -65,7 +79,7 @@ describe('Adoption Integration Tests', () => {
         password: 'Password123!',
         firstName: 'Owner',
         lastName: 'User',
-        phone: '123456789',
+        phone: '923456789',
         role: UserRole.ADOPTER,
         address: 'Owner Address',
         dni: '87654321'
@@ -163,7 +177,7 @@ describe('Adoption Integration Tests', () => {
         password: 'Password123!',
         firstName: 'Owner',
         lastName: 'User',
-        phone: '123456789',
+        phone: '923456789',
         role: UserRole.ADOPTER,
         address: 'Owner Address',
         dni: '87654321'

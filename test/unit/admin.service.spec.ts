@@ -8,7 +8,6 @@ import { UserRole } from '../../src/core/domain/user/value-objects/user-role.enu
 import { UserStatus } from '../../src/core/domain/user/value-objects/user-status';
 import { NotificationType } from '../../src/core/domain/notification/value-objects/notification-type.enum';
 
-
 describe('AdminService', () => {
   let service: AdminService;
   let userRepository: UserRepository;
