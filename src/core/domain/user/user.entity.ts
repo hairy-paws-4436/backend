@@ -22,7 +22,7 @@ export class UserEntity {
   private profileImageUrl?: string;
   private twoFactorSecret?: string;
   private twoFactorEnabled: boolean;
-  private identityDocument: string;
+  private identityDocument?: string;
   private createdAt: Date;
   private updatedAt: Date;
 
@@ -63,6 +63,7 @@ export class UserEntity {
     this.status = status;
     this.verified = verified;
     this.address = address;
+    this.identityDocument = identityDocument;
     this.profileImageUrl = profileImageUrl;
     this.twoFactorSecret = twoFactorSecret;
     this.twoFactorEnabled = twoFactorEnabled;
