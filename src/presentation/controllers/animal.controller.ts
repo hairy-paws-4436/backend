@@ -58,15 +58,9 @@ export class AnimalController {
     description: 'List of animals retrieved successfully',
   })
   async getAvailableAnimals(
-    @Query('type') typeStr?: string,
-    @Query('breed') breed?: string,
   ) {
-    const type = typeStr ? (typeStr as AnimalType) : undefined;
-
     const filters = {
       availableForAdoption: true,
-      ...(type && { type }),
-      ...(breed && { breed }),
     };
 
     const animals = await this.getAnimalsUseCase.execute(filters);

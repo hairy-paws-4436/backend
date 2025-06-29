@@ -14,6 +14,8 @@ import { NotificationModule } from './presentation/modules/notification.module';
 import { OngModule } from './presentation/modules/ong.module';
 import { UserModule } from './presentation/modules/user.module';
 import { AuthModule } from './presentation/modules/auth.module';
+import { EnhancedFeaturesModule } from './presentation/modules/enhanced-features.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -21,6 +23,9 @@ import { AuthModule } from './presentation/modules/auth.module';
       isGlobal: true,
       envFilePath: `.env`,
     }),
+
+    ScheduleModule.forRoot(),
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -28,6 +33,7 @@ import { AuthModule } from './presentation/modules/auth.module';
     }),
     AwsModule,
     AuthModule,
+    EnhancedFeaturesModule,
     UserModule,
     AnimalModule,
     AdoptionModule,
