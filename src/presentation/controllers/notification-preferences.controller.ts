@@ -1,3 +1,5 @@
+// Modifica temporalmente el controlador para saltar la validación:
+
 import {
   Controller,
   Get,
@@ -5,13 +7,37 @@ import {
   Body,
   UseGuards,
   HttpStatus,
+  UseInterceptors,
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { User } from '../decorators/user.decorator';
 import { UpdateNotificationPreferencesDto } from '../dtos/requests/update-notification-preferences.dto';
 import { NotificationPreferencesService } from '../../application/services/notification-preferences.service';
 
+@Injectable()
+export class DebugInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const request = context.switchToHttp().getRequest();
+    console.log('=== RAW REQUEST DEBUG ===');
+    console.log('Raw Body:', JSON.stringify(request.body, null, 2));
+    console.log('========================');
+
+    // Inspeccionar cada campo individualmente
+    if (request.body) {
+      Object.entries(request.body).forEach(([key, value]) => {
+        console.log(`Field: ${key}, Value: ${value}, Type: ${typeof value}`);
+      });
+    }
+
+    return next.handle();
+  }
+}
 
 @ApiTags('Notification Preferences')
 @Controller('notification-preferences')
@@ -33,24 +59,43 @@ export class NotificationPreferencesController {
   }
 
   @Put()
+  @UseInterceptors(DebugInterceptor)
   @ApiOperation({ summary: 'Actualizar preferencias de notificación' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Preferencias actualizadas exitosamente',
   })
   async updateNotificationPreferences(
-    @Body() updatePreferencesDto: UpdateNotificationPreferencesDto,
+    @Body() updatePreferencesDto: any, // CAMBIAR A any TEMPORALMENTE
     @User() user,
   ) {
-    const updatedPreferences = await this.notificationPreferencesService.updatePreferences(
-      user.id,
-      updatePreferencesDto,
-    );
+    console.log('=== NO VALIDATION - RAW DTO ===');
+    console.log('DTO received:', JSON.stringify(updatePreferencesDto, null, 2));
+    console.log('User ID:', user.id);
+    console.log('===============================');
 
-    return {
-      message: 'Preferencias de notificación actualizadas exitosamente',
-      preferences: updatedPreferences,
-    };
+    try {
+      // Intentar actualizar sin validación
+      const updatedPreferences = await this.notificationPreferencesService.updatePreferences(
+        user.id,
+        updatePreferencesDto, // Pasar directo sin validación
+      );
+
+      console.log('=== UPDATE SUCCESS ===');
+      console.log('Updated preferences:', JSON.stringify(updatedPreferences, null, 2));
+      console.log('======================');
+
+      return {
+        message: 'Preferencias de notificación actualizadas exitosamente',
+        preferences: updatedPreferences,
+      };
+    } catch (error) {
+      console.log('=== UPDATE ERROR ===');
+      console.log('Error:', error.message);
+      console.log('Stack:', error.stack);
+      console.log('====================');
+      throw error;
+    }
   }
 
   @Get('templates')
